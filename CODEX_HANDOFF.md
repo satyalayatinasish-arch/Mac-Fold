@@ -131,7 +131,9 @@ Implemented:
 
 ```text
 /Users/Yatin/Documents/GitHub/Mac-Fold
-├── .github/workflows/release.yml       CI: Xcode build, sign, notarize, release (macos-15)
+├── .github/workflows/
+│   ├── release.yml                     CI: Xcode build, sign, notarize, release (macos-15)
+│   └── codacy.yml                      Codacy static analysis workflow
 ├── Casks/
 │   └── mac-fold.rb                     Homebrew Cask formula for brew install
 ├── Package.swift                       SwiftPM manifest (macOS 14, Swift v5 mode)
@@ -215,6 +217,11 @@ Implemented:
 
 ## 5. RECENT COMMITS ON MAIN
 
+- `787e590 Update Cask depends_on macos to :sonoma syntax`
+- `4b9f223 Merge pull request #2 from satyalayatinasish-arch/satyalayatinasish-arch-patch-2 (codacy.yml)`
+- `a38da1e Configure project security policy and update handoff`
+- `b981d39 Merge pull request #1 from satyalayatinasish-arch/satyalayatinasish-arch-patch-1 (SECURITY.md)`
+- `d7f9953 Add Homebrew cask formula, compatibility matrix, and installation guide`
 - `df9a070 Display app version in Settings and MenuBar, fix update controller bug, optimize camera queue`
 - `47bab3f Add hinge-compensated camera eye tracking and bump to 1.0.7`
 - `cb74eae Add automatic eye tracking and update checks`

@@ -1,0 +1,6 @@
+.DS_Store
+.build/
+outputs/
+work/LidAngleSensor/
+work/Mac-Fold/.build/
+work/Mac-Fold/build/

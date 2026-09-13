@@ -101,7 +101,10 @@ The following is the relevant tracked source layout. Build outputs and `outputs/
 │   │   ├── AppDelegate.swift           App lifecycle and application menu (Cmd+, Cmd+Q)
 │   │   ├── LidController.swift         Core sensor state machine and overlay/capture lifecycle
 │   │   ├── Preferences.swift           UserDefaults-backed app settings/defaults
-│   │   ├── SettingsView.swift          SwiftUI popover/window settings UI
+│   │   ├── MenuBarView.swift           Minimal menu bar popover UI
+│   │   ├── MacBookHingeView.swift      Live angle-accurate MacBook vector illustration
+│   │   ├── LiquidGlass.swift           Liquid glass button styles, theme switcher & pill buttons
+│   │   ├── SettingsView.swift          SwiftUI settings window UI
 │   │   ├── SettingsWindowController.swift  Standard settings window used by Command-comma
 │   │   ├── StatusItemController.swift  Menu-bar item and settings popover
 │   │   ├── DepthOverlay.swift          Overlay window, perspective geometry, Metal host

@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import SwiftUI
 
 /// User settings, backed by `UserDefaults`.
 @MainActor
@@ -19,11 +20,12 @@ final class Preferences: ObservableObject {
         static let dimReach = "dimReach"
         static let showsAngleInMenuBar = "showsAngleInMenuBar"
         static let isLivePicture = "isLivePicture"
+        static let appTheme = "appTheme"
 
         static let all = [
             isEnabled, isTimeoutEnabled, thresholdAngle, blurSpan, maxBlurRadius,
             maxDim, viewingDistance, recession, blurEvenness, dimReach,
-            showsAngleInMenuBar, isLivePicture,
+            showsAngleInMenuBar, isLivePicture, appTheme,
         ]
     }
 
@@ -40,6 +42,7 @@ final class Preferences: ObservableObject {
         Key.dimReach: 0.5,
         Key.showsAngleInMenuBar: false,
         Key.isLivePicture: true,
+        Key.appTheme: "system",
     ]
 
     /// Master switch for the depth effect.
@@ -108,6 +111,20 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(isLivePicture, forKey: Key.isLivePicture) }
     }
 
+    /// User interface appearance: "system", "dark", or "light".
+    @Published var appTheme: String {
+        didSet { defaults.set(appTheme, forKey: Key.appTheme) }
+    }
+
+    /// SwiftUI ColorScheme corresponding to the current appTheme.
+    var colorScheme: ColorScheme? {
+        switch appTheme {
+        case "dark": return .dark
+        case "light": return .light
+        default: return nil
+        }
+    }
+
     /// Eye distance in screen heights, at the two ends of the perspective
     /// slider. The panel offers the strength, which runs the other way.
     static let farthestEye: Double = 6
@@ -155,6 +172,7 @@ final class Preferences: ObservableObject {
         dimReach = defaults.double(forKey: Key.dimReach)
         showsAngleInMenuBar = defaults.bool(forKey: Key.showsAngleInMenuBar)
         isLivePicture = defaults.bool(forKey: Key.isLivePicture)
+        appTheme = defaults.string(forKey: Key.appTheme) ?? "system"
     }
 
     func resetToDefaults() {
@@ -173,5 +191,6 @@ final class Preferences: ObservableObject {
         dimReach = defaults.double(forKey: Key.dimReach)
         showsAngleInMenuBar = defaults.bool(forKey: Key.showsAngleInMenuBar)
         isLivePicture = defaults.bool(forKey: Key.isLivePicture)
+        appTheme = "system"
     }
 }

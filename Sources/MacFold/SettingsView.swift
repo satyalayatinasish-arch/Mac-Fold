@@ -23,9 +23,9 @@ struct SettingsView: View {
 
     var onQuit: () -> Void
 
-    private static let width: CGFloat = 300
+    private static let width: CGFloat = 340
     private static let inset: CGFloat = 14
-    private static let bodyHeight: CGFloat = 400
+    private static let bodyHeight: CGFloat = 430
     private static let screenRecordingSettingsURL = URL(
         string: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_ScreenCapture"
     )!
@@ -39,8 +39,26 @@ struct SettingsView: View {
             Divider()
             if controller.isSensorAvailable {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        MacBookHingeView(
+                            angle: controller.currentAngle,
+                            isEnabled: preferences.isEnabled,
+                            compact: true
+                        )
+                        .frame(maxWidth: .infinity)
+                        .padding(.bottom, 2)
+
                         switches
+
+                        LiquidGlassActionButton(
+                            title: localized("Test Fold Effect"),
+                            icon: "sparkles",
+                            tint: .cyan
+                        ) {
+                            controller.runPreview()
+                        }
+                        .padding(.vertical, 2)
+
                         if !hasScreenPermission {
                             permissionNotice
                         }
@@ -64,6 +82,7 @@ struct SettingsView: View {
                 .padding(.bottom, 12)
         }
         .frame(width: Self.width)
+        .preferredColorScheme(preferences.colorScheme)
         .onAppear { hasScreenPermission = CGPreflightScreenCaptureAccess() }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             hasScreenPermission = CGPreflightScreenCaptureAccess()
@@ -71,13 +90,10 @@ struct SettingsView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
+        HStack(alignment: .center) {
             Text("Mac Fold").font(.title2.weight(.semibold))
             Spacer()
-            Text(String(format: "%.1f°", controller.currentAngle))
-                .font(.system(.title3, design: .rounded).monospacedDigit())
-                .foregroundStyle(.secondary)
-                .accessibilityLabel(localized("Lid angle"))
+            ThemeSwitchButton(preferences: preferences)
         }
     }
 
@@ -158,6 +174,20 @@ struct SettingsView: View {
 
     private var appGroup: some View {
         VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(localized("Appearance"))
+                Spacer()
+                Picker("", selection: $preferences.appTheme) {
+                    Text(localized("System")).tag("system")
+                    Text(localized("Light")).tag("light")
+                    Text(localized("Dark")).tag("dark")
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+                .controlSize(.small)
+                .fixedSize()
+                .accessibilityLabel(localized("Appearance"))
+            }
             HStack {
                 Text(localized("Language"))
                 Spacer()

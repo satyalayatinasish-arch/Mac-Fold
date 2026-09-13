@@ -13,8 +13,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let preferences = Preferences.shared
         let controller = LidController(preferences: preferences)
         self.controller = controller
-        statusItemController = StatusItemController(controller: controller, preferences: preferences)
-        settingsWindowController = SettingsWindowController(preferences: preferences, controller: controller)
+        let settingsWindow = SettingsWindowController(preferences: preferences, controller: controller)
+        self.settingsWindowController = settingsWindow
+        statusItemController = StatusItemController(
+            controller: controller,
+            preferences: preferences,
+            openSettings: { [weak settingsWindow] in
+                settingsWindow?.showSettings()
+            }
+        )
         installApplicationMenu()
         controller.start()
     }

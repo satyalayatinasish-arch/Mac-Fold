@@ -35,3 +35,9 @@
 "Language" = "语言";
 "System" = "跟随系统";
 "Chinese (Simplified)" = "简体中文";
+"Appearance" = "外观模式";
+"Light" = "浅色";
+"Dark" = "深色";
+"Test Fold Effect" = "测试折叠效果";
+"Settings" = "设置";
+

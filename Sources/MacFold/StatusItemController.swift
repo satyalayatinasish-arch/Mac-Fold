@@ -12,7 +12,11 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     private var titleTimer: Timer?
     private var barWindowMoved: NSObjectProtocol?
 
-    init(controller: LidController, preferences: Preferences) {
+    init(
+        controller: LidController,
+        preferences: Preferences,
+        openSettings: @escaping () -> Void
+    ) {
         self.controller = controller
         self.preferences = preferences
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -32,13 +36,16 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         popover.animates = true
         popover.delegate = self
 
-        let hostingController = NSHostingController(
-            rootView: SettingsView(
-                preferences: preferences,
-                controller: controller,
-                onQuit: { NSApp.terminate(nil) }
-            )
+        let menuBarView = MenuBarView(
+            preferences: preferences,
+            controller: controller,
+            onOpenSettings: { [weak self] in
+                self?.popover.performClose(nil)
+                openSettings()
+            },
+            onQuit: { NSApp.terminate(nil) }
         )
+        let hostingController = NSHostingController(rootView: menuBarView)
         // Without this the popover keeps its default height and clips the content.
         hostingController.sizingOptions = [.preferredContentSize]
         popover.contentViewController = hostingController

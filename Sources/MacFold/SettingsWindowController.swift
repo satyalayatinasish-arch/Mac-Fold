@@ -16,8 +16,8 @@ final class SettingsWindowController: NSWindowController {
         window.title = "Mac Fold Settings"
         window.styleMask = [.titled, .closable, .miniaturizable]
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 400, height: 590))
-        window.minSize = NSSize(width: 400, height: 420)
+        window.setContentSize(NSSize(width: 380, height: 620))
+        window.minSize = NSSize(width: 360, height: 480)
         window.center()
         super.init(window: window)
     }

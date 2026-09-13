@@ -3,7 +3,7 @@
 **Repository root:** `/Users/Yatin/Documents/GitHub/Mac-Fold`  
 **Canonical GitHub repository:** `https://github.com/satyalayatinasish-arch/Mac-Fold`  
 **Current branch:** `main`  
-**Latest pushed commit before the 1.0.4 implementation:** `9cff634` (`Update CODEX_HANDOFF with full conversation, UI redesign, and in-flight view-based fold feature`)
+**Latest implementation commit:** `48cd5bb` (`Implement observer-perspective fold geometry`)
 **Current app version:** `1.0.4` (locally built and packaged; release publication pending)
 **Last updated:** 2026-09-13 (local environment date)  
 
@@ -115,8 +115,8 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
   - `build/release/Mac-Fold-1.0.4.dmg` was verified by `hdiutil`.
   - README documents View-Based Fold Geometry.
 - [ ] **Physical behavior and release publication**:
-  - User must test a real close/open through 90° with Screen Recording granted.
-  - Commit/push the implementation and create GitHub release `v1.0.4` after that test or when explicitly directed.
+  - The implementation was committed and pushed to `main` as `48cd5bb`.
+  - User must test a real close/open through 90° with Screen Recording granted before publishing GitHub release `v1.0.4`.
 
 ---
 
@@ -212,5 +212,5 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
 
 When picking up work:
 1. Ask the user to physically test the already-running 1.0.4 app: above 90° (no effect), deliberate close below 90° (effect starts), observer sliders (perspective changes), and opening to 90° (effect ends exactly there).
-2. If the behavior passes, review `git diff`, commit the source/docs/handoff changes, push to `origin/main`, tag `v1.0.4`, and publish `build/release/Mac-Fold-1.0.4.dmg` to GitHub.
+2. If the behavior passes, tag `v1.0.4` and publish `build/release/Mac-Fold-1.0.4.dmg` to GitHub.
 3. If the behavior fails, collect the real angle and exact visible result, then adjust `DepthGeometry.corners()` rather than weakening the 90° gate or removing the velocity check.

@@ -13,7 +13,7 @@ enum SettingsLanguage: String {
     // Packaged apps keep resources in Contents/Resources; SwiftPM's generated
     // accessor only searches the app root and the original build directory.
     private static var resources: Bundle {
-        if let url = Bundle.main.resourceURL?.appendingPathComponent("MacDuo_MacDuo.bundle"),
+        if let url = Bundle.main.resourceURL?.appendingPathComponent("MacFold_MacFold.bundle"),
            let bundle = Bundle(url: url) { return bundle }
         return Bundle.module
     }

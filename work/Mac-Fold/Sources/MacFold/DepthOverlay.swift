@@ -98,7 +98,7 @@ final class DepthOverlay {
     private var renderer: DepthRenderer?
     private var hasTriedToBuildRenderer = false
     private var buildToken = 0
-    private let buildQueue = DispatchQueue(label: "MacDuo.pictureUpload", qos: .userInteractive)
+    private let buildQueue = DispatchQueue(label: "MacFold.pictureUpload", qos: .userInteractive)
 
     private var screenSize: CGSize = .zero
     private var startAngle: Double = 90

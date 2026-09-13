@@ -2,7 +2,7 @@ import AppKit
 
 @main
 @MainActor
-enum MacDuoMain {
+enum MacFoldMain {
     /// `NSApplication.delegate` is weak, so the delegate needs an owner that
     /// outlives the launch scope.
     private static var delegate: AppDelegate?

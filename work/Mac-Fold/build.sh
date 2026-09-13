@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Builds Mac Duo.app from the SwiftPM package.
+# Builds Mac Fold.app from the SwiftPM package.
 #
 #   ./build.sh            build and sign
 #   ./build.sh --run      build, sign, and relaunch the app
@@ -26,18 +26,18 @@ for argument in "$@"; do
   esac
 done
 
-swift build "${BUILD_ARGS[@]}" --product MacDuo
+swift build "${BUILD_ARGS[@]}" --product MacFold
 swift build "${BUILD_ARGS[@]}" --product lidprobe
 
 BIN_PATH="$(swift build "${BUILD_ARGS[@]}" --show-bin-path)"
-BINARY="$BIN_PATH/MacDuo"
+BINARY="$BIN_PATH/MacFold"
 PROBE="$BIN_PATH/lidprobe"
 
 rm -rf "$BUNDLE"
 mkdir -p "$BUNDLE/Contents/MacOS" "$BUNDLE/Contents/Resources"
-cp "$BINARY" "$BUNDLE/Contents/MacOS/MacDuo"
+cp "$BINARY" "$BUNDLE/Contents/MacOS/MacFold"
 # SwiftPM resolves Bundle.module relative to the application bundle.
-cp -R "$BIN_PATH/MacDuo_MacDuo.bundle" "$BUNDLE/Contents/Resources/"
+cp -R "$BIN_PATH/MacFold_MacFold.bundle" "$BUNDLE/Contents/Resources/"
 cp Resources/Info.plist "$BUNDLE/Contents/Info.plist"
 cp LICENSE NOTICE "$BUNDLE/Contents/Resources/"
 if [ -f Resources/AppIcon.icns ]; then
@@ -57,7 +57,7 @@ echo "built ${BUNDLE}"
 codesign -dv "$BUNDLE" 2>&1 | grep -E "Identifier|TeamIdentifier|Signature" || true
 
 if "$RUN_APP"; then
-  pkill -x MacDuo 2>/dev/null || true
+  pkill -x MacFold 2>/dev/null || true
   sleep 0.5
   open "$BUNDLE"
   echo "launched"

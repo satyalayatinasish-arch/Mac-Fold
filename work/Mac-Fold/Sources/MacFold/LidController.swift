@@ -150,7 +150,7 @@ final class LidController: ObservableObject {
         setPollInterval(Self.idlePollInterval)
         observeSystemEvents()
         DistributedNotificationCenter.default().addObserver(
-            forName: Notification.Name("to.maki.MacDuo.preview"),
+            forName: Notification.Name("local.yatin.mac-fold.preview"),
             object: nil,
             queue: .main
         ) { [weak self] _ in

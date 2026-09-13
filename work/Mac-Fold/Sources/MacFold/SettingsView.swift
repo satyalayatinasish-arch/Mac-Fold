@@ -26,7 +26,6 @@ struct SettingsView: View {
     private static let width: CGFloat = 300
     private static let inset: CGFloat = 14
     private static let bodyHeight: CGFloat = 400
-    private static let authorURL = URL(string: "https://github.com/sumimakito")!
     private static let screenRecordingSettingsURL = URL(
         string: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Privacy_ScreenCapture"
     )!
@@ -73,7 +72,7 @@ struct SettingsView: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text("Mac Duo").font(.title2.weight(.semibold))
+            Text("Mac Fold").font(.title2.weight(.semibold))
             Spacer()
             Text(String(format: "%.1f°", controller.currentAngle))
                 .font(.system(.title3, design: .rounded).monospacedDigit())
@@ -185,15 +184,6 @@ struct SettingsView: View {
             }
             .controlSize(.small)
             .padding(.top, 2)
-            HStack(spacing: 0) {
-                Text(localized("Made by ")).foregroundStyle(.secondary)
-                Link("Makito", destination: Self.authorURL)
-                    .pointingHand()
-                Spacer()
-                Text("© 2026 Makito").foregroundStyle(.secondary)
-            }
-            .font(.caption2)
-            .padding(.top, 2)
         }
     }
 
@@ -242,7 +232,7 @@ struct SettingsView: View {
                 .controlSize(.small)
             }
             if settingsOpenFailed {
-                Text(localized("Could not open System Settings. Open it manually and enable screen recording for Mac Duo under Privacy & Security."))
+                Text(localized("Could not open System Settings. Open it manually and enable screen recording for Mac Fold under Privacy & Security."))
                     .font(.caption)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "MacDuo",
+    name: "MacFold",
     defaultLocalization: "en",
     platforms: [.macOS(.v14)],
     targets: [
@@ -12,9 +12,9 @@ let package = Package(
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .executableTarget(
-            name: "MacDuo",
+            name: "MacFold",
             dependencies: ["LidAngleKit"],
-            path: "Sources/MacDuo",
+            path: "Sources/MacFold",
             resources: [.process("Resources")],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),

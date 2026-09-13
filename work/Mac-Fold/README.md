@@ -1,73 +1,42 @@
 <div align="center">
 
-# Mac Duo
+# Mac Fold
 
-**Wish you could bring the iPhone Duo effect to your MacBook?**
+**A lid-angle-driven desktop fold effect for compatible MacBooks.**
 
-https://github.com/user-attachments/assets/3ea3b098-c6d2-4398-8f3a-e9087bbb33f2
-
-Close the lid and watch your screen content tilt, blur, and fade as it moves.  
-Mac Duo adds this effect to your MacBook, with controls in the menu bar.
+Close the lid below 90° to project your live built-in display into a Metal-rendered fold effect. The overlay reverses as the lid opens and ends at 90°.
 
 **Available in:** English and Simplified Chinese (简体中文).
 
-<img src="./assets/menu.png" width="400" alt="Mac Duo menu">
+<img src="./assets/menu.png" width="400" alt="Mac Fold menu">
 
 </div>
 
-<hr>
+## Features
 
-With the default settings, it's recommended to view the effect in front of your MacBook.
-
-- **Metal rendering:** Uses GPU rendering to apply perspective, blur, and dimming as the lid closes.
-- **Live screen content:** Uses ScreenCaptureKit to capture and render screen content in real time.
-- **Adjustable perspective:** Tweak the perspective to suit your viewing position and make the effect look more natural.
-
-
-> [!NOTE]
-> Mac Duo is completely **free** to use. Whether you use the app or reuse its code in your projects, please consider [sponsoring me](https://github.com/sponsors/sumimakito) if you find it helpful.
->
-> Special thanks to our team at [Moeru AI](https://github.com/moeru-ai) for sponsoring the Apple Developer Program membership used to sign and notarize the prebuilt app here.
-
-## Download
-
-[Download DMG](https://github.com/sumimakito/Mac-Duo/releases/download/dev/Mac-Duo-dev.dmg) | [Download ZIP](https://github.com/sumimakito/Mac-Duo/releases/download/dev/Mac-Duo-dev.zip)
-
-These downloads contain the latest [development build](https://github.com/sumimakito/Mac-Duo/releases/tag/dev) for Apple Silicon and Intel Macs.
-
-Requires macOS 14 or later and a MacBook with a compatible lid angle sensor.
-Grant Screen Recording permission when prompted to enable the effect.
+- **Metal rendering:** GPU perspective, blur, and dimming while the lid closes.
+- **Live screen content:** ScreenCaptureKit mirrors the built-in display in real time.
+- **Adjustable perspective:** Tune the visual depth to suit your viewing position.
+- **90° threshold:** No effect above 90°; the effect starts below 90° when closing and stops at 90° when opening.
 
 ## Build
 
-Requires Xcode with Swift 6.0 or later. Run from the project directory:
+Requires macOS 14 or later, Xcode with Swift 6.0 or later, and a compatible MacBook lid-angle sensor.
 
 ```sh
 ./build.sh
-```
-
-The script creates `build/Mac Duo.app` with an ad-hoc signature. Open it from Finder, or build and launch with:
-
-```sh
 ./build.sh --run
 ```
 
-macOS may require Screen Recording permission again after rebuilding with ad-hoc signing.
+The script creates `build/Mac Fold.app` with an ad-hoc signature. Grant Screen Recording permission when macOS asks.
 
 ## Known limitations
 
-- Only MacBooks with a compatible lid angle sensor can use the effect. The app reports when no sensor is available.
-- The sensor must be one macOS marks as built-in. An external display with a similar sensor is ignored.
+- Only compatible MacBooks with a readable internal lid-angle sensor can use the live effect.
 - The effect applies only to the built-in display.
-- The effect stops when macOS sleeps as the lid closes.
-- Clicks pass through the effect to the apps underneath.
+- The effect stops when macOS puts the MacBook to sleep near full closure.
+- Clicks pass through the overlay to underlying apps.
 
-## Acknowledgements
+## License and attribution
 
-This project is built with AI assistance.
-
-## License
-
-Licensed under the [Apache License 2.0](LICENSE). Copyright 2026 Makito.
-
-See [NOTICE](NOTICE) for attribution.
+Mac Fold is distributed under the [Apache License 2.0](LICENSE). Required upstream attribution remains in [NOTICE](NOTICE).

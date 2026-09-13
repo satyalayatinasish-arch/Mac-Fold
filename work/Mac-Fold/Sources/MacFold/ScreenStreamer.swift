@@ -172,7 +172,7 @@ final class ScreenStreamer {
             try fresh.addStreamOutput(
                 receiver,
                 type: .screen,
-                sampleHandlerQueue: DispatchQueue(label: "MacDuo.frames", qos: .userInteractive)
+                sampleHandlerQueue: DispatchQueue(label: "MacFold.frames", qos: .userInteractive)
             )
             let started = CFAbsoluteTimeGetCurrent()
             try await fresh.startCapture()

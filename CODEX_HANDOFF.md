@@ -214,3 +214,11 @@ When picking up work:
 1. Ask the user to physically test the already-running 1.0.4 app: above 90° (no effect), deliberate close below 90° (effect starts), observer sliders (perspective changes), and opening to 90° (effect ends exactly there).
 2. If the behavior passes, tag `v1.0.4` and publish `build/release/Mac-Fold-1.0.4.dmg` to GitHub.
 3. If the behavior fails, collect the real angle and exact visible result, then adjust `DepthGeometry.corners()` rather than weakening the 90° gate or removing the velocity check.
+
+### Camera-assisted viewpoint update (v1.0.5, current uncommitted work)
+
+- `ViewerPositionTracker.swift` uses AVFoundation and Vision face detection only after camera permission is explicitly granted. Frames stay in memory and are never written or uploaded.
+- It calibrates a relative eye-height and apparent-distance baseline, then updates `observerElevationAngle` and `viewingDistance`, which already flow into `DepthTuning` and the Metal projection.
+- It cannot automatically and accurately measure base tilt relative to the ground: the built-in camera is attached to the moving lid, not the keyboard base or the room. `baseTiltAngle` remains user calibrated/manual by design.
+- `NSCameraUsageDescription` is set in `Resources/Info.plist`; the full settings window has calibration/status controls and the menu bar has a compact tracking switch/status.
+- `AUTO_UPDATE_CHECKLIST.md` records the required Developer ID, notarization, signed appcast, and user-consent work before a self-updater may be enabled. No fake/insecure self-update mechanism was added.

@@ -6,6 +6,7 @@ import SwiftUI
 struct MenuBarView: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var controller: LidController
+    @ObservedObject var viewerTracker: ViewerPositionTracker
     @AppStorage("settingsLanguage") private var language = ""
 
     let onOpenSettings: () -> Void
@@ -103,6 +104,21 @@ struct MenuBarView: View {
                     value: $preferences.baseTiltAngle,
                     range: 0...30
                 )
+                HStack(spacing: 6) {
+                    Image(systemName: viewerTracker.isFaceVisible ? "face.smiling" : "camera")
+                        .foregroundStyle(viewerTracker.isFaceVisible ? .green : .secondary)
+                    Text(viewerTracker.isRunning
+                         ? (viewerTracker.isFaceVisible ? localized("Camera tracking") : localized("Looking for face"))
+                         : localized("Manual calibration"))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Toggle("", isOn: $preferences.isCameraViewTracking)
+                        .labelsHidden()
+                        .toggleStyle(.switch)
+                        .controlSize(.mini)
+                        .accessibilityLabel(localized("Use camera for viewer position"))
+                }
             }
             .padding(10)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
@@ -136,6 +152,16 @@ struct MenuBarView: View {
         }
         .frame(width: 300)
         .preferredColorScheme(preferences.colorScheme)
+        .onAppear { synchronizeCameraTracking() }
+        .onChange(of: preferences.isCameraViewTracking) { _, _ in
+            synchronizeCameraTracking()
+        }
+        .onChange(of: viewerTracker.estimatedElevationAngle) { _, _ in
+            applyCameraEstimate()
+        }
+        .onChange(of: viewerTracker.estimatedViewingDistance) { _, _ in
+            applyCameraEstimate()
+        }
     }
 
     private func quickToggleRow(
@@ -184,6 +210,26 @@ struct MenuBarView: View {
                 .font(.caption2.monospacedDigit())
                 .frame(width: 28, alignment: .trailing)
                 .foregroundStyle(.secondary)
+        }
+    }
+
+    private func synchronizeCameraTracking() {
+        if preferences.isCameraViewTracking {
+            viewerTracker.start()
+        } else {
+            viewerTracker.stop()
+        }
+    }
+
+    private func applyCameraEstimate() {
+        guard preferences.isCameraViewTracking else { return }
+        if let elevation = viewerTracker.estimatedElevationAngle,
+           abs(preferences.observerElevationAngle - elevation) >= 0.2 {
+            preferences.observerElevationAngle = elevation
+        }
+        if let distance = viewerTracker.estimatedViewingDistance,
+           abs(preferences.viewingDistance - distance) >= 0.1 {
+            preferences.viewingDistance = distance
         }
     }
 }

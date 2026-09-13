@@ -5,6 +5,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var controller: LidController
+    @ObservedObject var viewerTracker: ViewerPositionTracker
 
     /// Empty means following the system language.
     @AppStorage("settingsLanguage") private var language = ""
@@ -68,6 +69,7 @@ struct SettingsView: View {
                         lookGroup
                         perspectiveGroup
                         observerPositionGroup
+                        cameraAssistedGroup
                     }
                     .padding(.horizontal, Self.inset)
                     .padding(.vertical, 10)
@@ -86,7 +88,19 @@ struct SettingsView: View {
         }
         .frame(width: Self.width)
         .preferredColorScheme(preferences.colorScheme)
-        .onAppear { hasScreenPermission = CGPreflightScreenCaptureAccess() }
+        .onAppear {
+            hasScreenPermission = CGPreflightScreenCaptureAccess()
+            synchronizeCameraTracking()
+        }
+        .onChange(of: preferences.isCameraViewTracking) { _, _ in
+            synchronizeCameraTracking()
+        }
+        .onChange(of: viewerTracker.estimatedElevationAngle) { _, _ in
+            applyCameraEstimate()
+        }
+        .onChange(of: viewerTracker.estimatedViewingDistance) { _, _ in
+            applyCameraEstimate()
+        }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             hasScreenPermission = CGPreflightScreenCaptureAccess()
         }
@@ -185,6 +199,50 @@ struct SettingsView: View {
                 localized("Base Tilt"), value: $preferences.baseTiltAngle, in: 0...30, format: "%.0f°",
                 help: localized("Tilt of the keyboard deck above a flat desk or floor.")
             )
+        }
+    }
+
+    private var cameraAssistedGroup: some View {
+        group(localized("Camera-Assisted Viewpoint")) {
+            toggleRow(
+                localized("Use camera for viewer position"),
+                isOn: $preferences.isCameraViewTracking,
+                help: localized("Processes face position on this Mac only. No video is saved or uploaded.")
+            )
+            HStack(spacing: 6) {
+                Image(systemName: viewerTracker.isFaceVisible ? "face.smiling" : "camera.fill")
+                    .foregroundStyle(viewerTracker.isFaceVisible ? .green : .secondary)
+                Text(cameraStatusText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button(localized("Calibrate")) {
+                    _ = viewerTracker.calibrate(
+                        observerElevation: preferences.observerElevationAngle,
+                        viewingDistance: preferences.viewingDistance
+                    )
+                }
+                .disabled(!preferences.isCameraViewTracking || !viewerTracker.canCalibrate)
+                .controlSize(.small)
+            }
+            Text(localized("Sit naturally, enable the camera, then calibrate. Base Tilt remains manual because a lid-mounted camera cannot independently measure the keyboard deck against the ground."))
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var cameraStatusText: String {
+        switch viewerTracker.status {
+        case .inactive: return localized("Camera is off")
+        case .requestingPermission: return localized("Requesting camera permission")
+        case .running:
+            return viewerTracker.isFaceVisible
+                ? localized("Face detected — calibrated values update live")
+                : localized("Camera is on — face not detected")
+        case .denied: return localized("Camera permission is required")
+        case .unavailable: return localized("No camera is available")
+        case .failed: return localized("Camera could not start")
         }
     }
 
@@ -349,6 +407,26 @@ struct SettingsView: View {
             }
         } catch {
             launchesAtLogin = SMAppService.mainApp.status == .enabled
+        }
+    }
+
+    private func synchronizeCameraTracking() {
+        if preferences.isCameraViewTracking {
+            viewerTracker.start()
+        } else {
+            viewerTracker.stop()
+        }
+    }
+
+    private func applyCameraEstimate() {
+        guard preferences.isCameraViewTracking else { return }
+        if let elevation = viewerTracker.estimatedElevationAngle,
+           abs(preferences.observerElevationAngle - elevation) >= 0.2 {
+            preferences.observerElevationAngle = elevation
+        }
+        if let distance = viewerTracker.estimatedViewingDistance,
+           abs(preferences.viewingDistance - distance) >= 0.1 {
+            preferences.viewingDistance = distance
         }
     }
 }

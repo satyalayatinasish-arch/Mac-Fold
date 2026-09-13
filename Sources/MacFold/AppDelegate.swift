@@ -5,6 +5,7 @@ import CoreGraphics
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var controller: LidController?
+    private var viewerTracker: ViewerPositionTracker?
     private var statusItemController: StatusItemController?
     private var settingsWindowController: SettingsWindowController?
 
@@ -12,12 +13,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Diagnostics.geometry.notice("launched, screen recording granted: \(CGPreflightScreenCaptureAccess())")
         let preferences = Preferences.shared
         let controller = LidController(preferences: preferences)
+        let viewerTracker = ViewerPositionTracker()
         self.controller = controller
-        let settingsWindow = SettingsWindowController(preferences: preferences, controller: controller)
+        self.viewerTracker = viewerTracker
+        let settingsWindow = SettingsWindowController(
+            preferences: preferences,
+            controller: controller,
+            viewerTracker: viewerTracker
+        )
         self.settingsWindowController = settingsWindow
         statusItemController = StatusItemController(
             controller: controller,
             preferences: preferences,
+            viewerTracker: viewerTracker,
             openSettings: { [weak settingsWindow] in
                 settingsWindow?.showSettings()
             }
@@ -28,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         controller?.stop()
+        viewerTracker?.stop()
     }
 
     @objc private func openSettings(_ sender: Any?) {

@@ -25,6 +25,14 @@ struct SettingsView: View {
 
     var onQuit: () -> Void
 
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? updateController.currentVersion
+    }
+
+    private var appBuild: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+    }
+
     private static let width: CGFloat = 340
     private static let inset: CGFloat = 14
     private static let bodyHeight: CGFloat = 430
@@ -110,7 +118,12 @@ struct SettingsView: View {
 
     private var header: some View {
         HStack(alignment: .center) {
-            Text("Mac Fold").font(.title2.weight(.semibold))
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Mac Fold").font(.title2.weight(.semibold))
+                Text(String(format: localized("Version %@"), appVersion))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
             Spacer()
             ThemeSwitchButton(preferences: preferences)
         }
@@ -236,6 +249,13 @@ struct SettingsView: View {
 
     private var updateGroup: some View {
         group(localized("Updates")) {
+            HStack {
+                Text(localized("Current Version"))
+                Spacer()
+                Text(String(format: "%@ (%@)", appVersion, appBuild))
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
             toggleRow(
                 localized("Automatically check for updates"),
                 isOn: $preferences.isAutomaticUpdateChecks,
@@ -327,6 +347,15 @@ struct SettingsView: View {
                 Button(localized("Quit"), action: onQuit)
             }
             .controlSize(.small)
+            .padding(.top, 2)
+
+            HStack {
+                Spacer()
+                Text(verbatim: "Mac Fold v\(appVersion) (\(appBuild))")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.tertiary)
+                Spacer()
+            }
             .padding(.top, 2)
         }
     }

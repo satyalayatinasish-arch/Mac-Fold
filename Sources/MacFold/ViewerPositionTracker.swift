@@ -68,13 +68,16 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
     }
 
     func stop() {
-        guard session.isRunning else {
-            if status != .denied && status != .unavailable { status = .inactive }
-            return
+        cameraQueue.async { [weak self] in
+            guard let self else { return }
+            if self.session.isRunning {
+                self.session.stopRunning()
+            }
+            DispatchQueue.main.async {
+                if self.status != .denied && self.status != .unavailable { self.status = .inactive }
+                self.isFaceVisible = false
+            }
         }
-        session.stopRunning()
-        status = .inactive
-        isFaceVisible = false
     }
 
     /// The camera rotates with the lid. Feed the physical hinge reading so a
@@ -105,19 +108,24 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
     }
 
     private func configureAndStart() {
-        guard !session.isRunning else {
-            status = .running
-            return
+        cameraQueue.async { [weak self] in
+            guard let self else { return }
+            guard !self.session.isRunning else {
+                DispatchQueue.main.async { self.status = .running }
+                return
+            }
+            guard self.configureIfNeeded() else { return }
+            self.session.startRunning()
+            DispatchQueue.main.async {
+                self.status = .running
+            }
         }
-        guard configureIfNeeded() else { return }
-        session.startRunning()
-        status = .running
     }
 
     private func configureIfNeeded() -> Bool {
         guard !isConfigured else { return true }
         guard let device = AVCaptureDevice.default(for: .video) else {
-            status = .unavailable
+            DispatchQueue.main.async { self.status = .unavailable }
             return false
         }
 
@@ -127,7 +135,7 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             session.sessionPreset = .medium
             guard session.canAddInput(input), session.canAddOutput(output) else {
                 session.commitConfiguration()
-                status = .failed
+                DispatchQueue.main.async { self.status = .failed }
                 return false
             }
             session.addInput(input)
@@ -141,7 +149,7 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             isConfigured = true
             return true
         } catch {
-            status = .failed
+            DispatchQueue.main.async { self.status = .failed }
             return false
         }
     }

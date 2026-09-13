@@ -21,16 +21,26 @@ struct MenuBarView: View {
         selectedLanguage.localized(key)
     }
 
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? updateController.currentVersion
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Header
             HStack(alignment: .center) {
-                HStack(spacing: 7) {
+                HStack(spacing: 6) {
                     Image(systemName: "laptopcomputer")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(Color.accentColor)
                     Text("Mac Fold")
                         .font(.headline.weight(.bold))
+                    Text(verbatim: "v\(appVersion)")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1.5)
+                        .background(Color.primary.opacity(0.06), in: Capsule())
+                        .foregroundStyle(.secondary)
                 }
 
                 Spacer()

@@ -81,3 +81,5 @@
 "Version %@ is available" = "Version %@ is available";
 "Could not check for updates" = "Could not check for updates";
 "Get Version %@" = "Get Version %@";
+"Current Version" = "Current Version";
+"Version %@" = "Version %@";

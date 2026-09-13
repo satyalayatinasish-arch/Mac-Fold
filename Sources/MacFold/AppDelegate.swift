@@ -54,6 +54,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func checkForUpdates(_ sender: Any?) {
+        settingsWindowController?.showSettings()
         updateController?.checkForUpdates()
     }
 

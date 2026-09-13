@@ -18,7 +18,7 @@ final class UpdateController: ObservableObject {
     @Published private(set) var latestVersion: String?
     @Published private(set) var releaseURL: URL?
 
-    private let currentVersion: String
+    let currentVersion: String
     private static let releasesURL = URL(string: "https://api.github.com/repos/satyalayatinasish-arch/Mac-Fold/releases")!
     private static let lastCheckKey = "lastUpdateCheck"
 
@@ -54,7 +54,7 @@ final class UpdateController: ObservableObject {
             do {
                 var request = URLRequest(url: Self.releasesURL)
                 request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-                request.setValue("MacFold/(self.currentVersion)", forHTTPHeaderField: "User-Agent")
+                request.setValue("MacFold/\(self.currentVersion)", forHTTPHeaderField: "User-Agent")
                 let (data, response) = try await URLSession.shared.data(for: request)
                 guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
                     throw URLError(.badServerResponse)
@@ -82,8 +82,10 @@ final class UpdateController: ObservableObject {
     }
 
     private static func isNewer(_ lhs: String, than rhs: String) -> Bool {
-        let left = lhs.split(separator: ".").compactMap { Int($0) }
-        let right = rhs.split(separator: ".").compactMap { Int($0) }
+        let cleanLhs = lhs.trimmingCharacters(in: CharacterSet(charactersIn: "vV"))
+        let cleanRhs = rhs.trimmingCharacters(in: CharacterSet(charactersIn: "vV"))
+        let left = cleanLhs.split(separator: ".").compactMap { Int($0) }
+        let right = cleanRhs.split(separator: ".").compactMap { Int($0) }
         for index in 0..<max(left.count, right.count) {
             let a = index < left.count ? left[index] : 0
             let b = index < right.count ? right[index] : 0

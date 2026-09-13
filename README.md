@@ -18,7 +18,7 @@ Close the lid below 90° to project your live built-in display into a Metal-rend
 
 <br>
 
-<img src="./assets/menu.png" width="420" alt="Mac Fold Menu Bar Settings">
+<img src="./assets/menu.png" width="360" alt="Mac Fold Menu Bar Settings">
 
 </div>
 

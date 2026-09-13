@@ -43,7 +43,9 @@ struct SettingsView: View {
                         MacBookHingeView(
                             angle: controller.currentAngle,
                             isEnabled: preferences.isEnabled,
-                            compact: true
+                            compact: true,
+                            observerElevationAngle: preferences.observerElevationAngle,
+                            baseTiltAngle: preferences.baseTiltAngle
                         )
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, 2)
@@ -65,6 +67,7 @@ struct SettingsView: View {
                         startGroup
                         lookGroup
                         perspectiveGroup
+                        observerPositionGroup
                     }
                     .padding(.horizontal, Self.inset)
                     .padding(.vertical, 10)
@@ -168,6 +171,19 @@ struct SettingsView: View {
             slider(
                 localized("Perspective"), value: perspective, in: 0...1, format: "%.0f%%", scale: 100,
                 help: localized("0 keeps the sides parallel, 100 converges sharply.")
+            )
+        }
+    }
+
+    private var observerPositionGroup: some View {
+        group(localized("Observer Position")) {
+            slider(
+                localized("Eye Height"), value: $preferences.observerElevationAngle, in: 0...60, format: "%.0f°",
+                help: localized("Eye height above the screen centre. Higher values strengthen the view-based fold.")
+            )
+            slider(
+                localized("Base Tilt"), value: $preferences.baseTiltAngle, in: 0...30, format: "%.0f°",
+                help: localized("Tilt of the keyboard deck above a flat desk or floor.")
             )
         }
     }

@@ -40,4 +40,12 @@
 "Dark" = "Dark";
 "Test Fold Effect" = "Test Fold Effect";
 "Settings" = "Settings";
-
+"Observer Position" = "Observer Position";
+"Eye Height" = "Eye Height";
+"Base Tilt" = "Base Tilt";
+"Eye height above the screen centre. Higher values strengthen the view-based fold." = "Eye height above the screen centre. Higher values strengthen the view-based fold.";
+"Tilt of the keyboard deck above a flat desk or floor." = "Tilt of the keyboard deck above a flat desk or floor.";
+"Floor Level" = "Floor Level";
+"Elevated" = "Elevated";
+"Flat" = "Flat";
+"Tilted" = "Tilted";

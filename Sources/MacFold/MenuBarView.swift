@@ -38,7 +38,9 @@ struct MenuBarView: View {
             MacBookHingeView(
                 angle: controller.currentAngle,
                 isEnabled: preferences.isEnabled,
-                compact: false
+                compact: false,
+                observerElevationAngle: preferences.observerElevationAngle,
+                baseTiltAngle: preferences.baseTiltAngle
             )
             .padding(.horizontal, 10)
             .padding(.top, 4)

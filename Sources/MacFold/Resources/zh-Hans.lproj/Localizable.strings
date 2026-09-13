@@ -40,4 +40,12 @@
 "Dark" = "深色";
 "Test Fold Effect" = "测试折叠效果";
 "Settings" = "设置";
-
+"Observer Position" = "观察者位置";
+"Eye Height" = "视线高度";
+"Base Tilt" = "底座倾角";
+"Eye height above the screen centre. Higher values strengthen the view-based fold." = "眼睛相对屏幕中心的高度。较高的值会增强基于视角的折叠效果。";
+"Tilt of the keyboard deck above a flat desk or floor." = "键盘底座相对平坦桌面或地面的倾角。";
+"Floor Level" = "地面水平";
+"Elevated" = "抬高";
+"Flat" = "平放";
+"Tilted" = "倾斜";

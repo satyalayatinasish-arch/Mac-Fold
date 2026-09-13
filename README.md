@@ -14,7 +14,7 @@
 
 Close the lid below 90° to project your live built-in display into a Metal-rendered fold effect. As the lid unfolds, the screen returns flat and seamlessly ends at 90°.
 
-[**Download Latest DMG (v1.0.3)**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/download/v1.0.3/Mac-Fold-1.0.3.dmg) &nbsp;•&nbsp; [**All Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases) &nbsp;•&nbsp; [**Report an Issue**](https://github.com/satyalayatinasish-arch/Mac-Fold/issues)
+[**All Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases) &nbsp;•&nbsp; [**Report an Issue**](https://github.com/satyalayatinasish-arch/Mac-Fold/issues)
 
 <br>
 
@@ -35,6 +35,7 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 ## Key Features
 
 - **Metal-Accelerated 3D Perspective**: Smooth GPU-rendered fold geometry with realistic depth projection, dynamic blur gradients, and progressive dimming.
+- **View-Based Fold Geometry**: Tune eye height and keyboard-base tilt so the perspective responds to where you are viewing the MacBook from, not only to hinge travel.
 - **Real-Time Desktop Mirroring**: High-performance display capture via `ScreenCaptureKit` at 30 fps. Mac Fold automatically excludes its own windows to eliminate visual recursion loops.
 - **Strict 90° Boundary Threshold**:
   - **At or above 90°**: No overlay or visual effect is shown.
@@ -44,7 +45,7 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 - **Zero-Lag Motion Prediction**: Sensor velocity tracking anticipates rapid closing gestures, eliminating perceptible visual latency.
 - **Native macOS Settings**:
   - Accessible via the menu bar popover or standard <kbd>⌘</kbd> <kbd>,</kbd> Settings window.
-  - Full controls for master enable, live rendering toggle, fold threshold, blur span, blur radius, dimming reach, viewing distance, perspective recession, and idle timeout.
+  - Full controls for master enable, live rendering toggle, fold threshold, blur span, blur radius, dimming reach, viewing distance, perspective recession, observer eye height, base tilt, and idle timeout.
   - Optional live lid-angle display directly in the macOS menu bar.
 - **Click-Through & Non-Intrusive**: The overlay window is borderless, non-activating, and passes all mouse clicks through to background apps.
 - **Built-In Diagnostic CLI (`lidprobe`)**: Inspect hardware sensor availability, live angle streaming, refresh rates, and event logs.
@@ -55,7 +56,7 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 
 ### Pre-Built DMG
 
-1. Download the latest release: [**Mac-Fold-1.0.3.dmg**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/download/v1.0.3/Mac-Fold-1.0.3.dmg).
+1. Download the latest release from [**GitHub Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases).
 2. Open the disk image and drag **Mac Fold** to your `/Applications` folder.
 3. Launch **Mac Fold** from `/Applications` or Spotlight.
 4. **Grant Permissions**: When prompted, grant **Screen Recording** permission in:
@@ -76,6 +77,10 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 | **Menu Bar Quick Controls** | Click the Mac Fold icon in the menu bar |
 | **Trigger Fold Effect** | Deliberately close the MacBook display below 90° |
 | **Dismiss Fold Effect** | Open the lid back to 90° |
+
+### View-Based Perspective
+
+In **Settings → Observer Position**, use **Eye Height** to describe how far your eyes are above the screen centre and **Base Tilt** when the keyboard deck is not flat on a desk. These controls adjust only the perspective projection after the fold begins; they do not move the strict 90° start/stop boundary.
 
 ---
 

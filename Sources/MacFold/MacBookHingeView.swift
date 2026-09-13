@@ -7,6 +7,8 @@ struct MacBookHingeView: View {
     let angle: Double
     var isEnabled: Bool = true
     var compact: Bool = false
+    var observerElevationAngle: Double = 20
+    var baseTiltAngle: Double = 0
 
     private var clampedAngle: Double {
         max(0, min(angle, 150))
@@ -215,5 +217,32 @@ struct MacBookHingeView: View {
             )
         )
         context.stroke(hingePath, with: .color(Color.black.opacity(0.45)), lineWidth: 0.75)
+
+        // 6. Observer cue. It makes the selected eye elevation legible in the
+        // UI without changing the physical lid-angle illustration.
+        let eyeElevation = max(0, min(observerElevationAngle, 60)) * .pi / 180
+        let eyeDistance: CGFloat = compact ? 37 : 48
+        let eyeOrigin = CGPoint(x: pivotX + baseLength * 0.64, y: pivotY - 14)
+        let eye = CGPoint(
+            x: eyeOrigin.x + cos(eyeElevation) * eyeDistance,
+            y: eyeOrigin.y - sin(eyeElevation) * eyeDistance
+        )
+        var sightLine = Path()
+        sightLine.move(to: eye)
+        sightLine.addLine(to: CGPoint(x: pivotX + lidLength * 0.42, y: pivotY - sinA * lidLength * 0.42))
+        context.stroke(
+            sightLine,
+            with: .color(Color.cyan.opacity(0.42)),
+            style: StrokeStyle(lineWidth: 1, dash: [3, 3])
+        )
+        context.fill(Path(ellipseIn: CGRect(x: eye.x - 3, y: eye.y - 3, width: 6, height: 6)), with: .color(.cyan))
+
+        // A small base reference makes a non-flat base setting visible.
+        if abs(baseTiltAngle) > 0.1 {
+            let label = Text(String(format: "Base +%.0f°", baseTiltAngle))
+                .font(.system(size: compact ? 8 : 9, weight: .medium))
+                .foregroundStyle(.secondary)
+            context.draw(label, at: CGPoint(x: pivotX + baseLength * 0.57, y: pivotY + 20))
+        }
     }
 }

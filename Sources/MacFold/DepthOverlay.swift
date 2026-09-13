@@ -26,22 +26,44 @@ struct DepthGeometry {
         currentAngle: Double,
         viewingDistanceRatio: Double,
         recession: Double,
+        observerElevation: Double,
+        baseTilt: Double,
         screenSize: CGSize
     ) -> [CGPoint] {
         let width = Double(screenSize.width)
         let height = Double(screenSize.height)
-        let start = startAngle * .pi / 180
-        let current = currentAngle * .pi / 180
+        // Hinge readings are relative to the keyboard deck. Account for a
+        // stand or tilted desk before projecting into room coordinates.
+        let start = (startAngle + baseTilt) * .pi / 180
+        let current = (currentAngle + baseTilt) * .pi / 180
+        let eyeElevation = observerElevation * .pi / 180
         let travel = max(startAngle - currentAngle, 0)
-        let separation = min(recession * travel, maxSeparationDegrees) * .pi / 180
 
-        // The eye in world axes, hinge at the origin.
-        let reach = height * viewingDistanceRatio + height / 2 * cos(start)
-        let rise = height / 2 * sin(start)
+        // The eye's elevation affects the amount of separation the observer
+        // perceives. The actual eye position below also changes the vanishing
+        // point; this multiplier keeps the fold's perceived strength in step
+        // with that viewpoint without altering the strict lid threshold.
+        let viewScale = min(
+            max(1 + 0.55 * sin(eyeElevation) + 0.25 * sin(abs(baseTilt) * .pi / 180), 0.5),
+            1.75
+        )
+        let separation = min(recession * travel * viewScale, maxSeparationDegrees) * .pi / 180
 
-        // The same eye, measured along the glass and away from it.
-        let along = reach * cos(current) + rise * sin(current)
-        let depth = max(reach * sin(current) - rise * cos(current), height / 10)
+        // Room coordinates: Y is up and Z points toward the observer. The
+        // screen's top-edge direction is (sin(theta), -cos(theta)); its
+        // viewer-facing normal is (cos(theta), sin(theta)). Place the eye a
+        // configurable elevation above the screen centre at the start angle.
+        let eyeDistance = height * viewingDistanceRatio
+        let startCentreY = height / 2 * sin(start)
+        let startCentreZ = -height / 2 * cos(start)
+        let eyeY = startCentreY + eyeDistance * sin(eyeElevation)
+        let eyeZ = startCentreZ + eyeDistance * cos(eyeElevation)
+
+        // Resolve that fixed room-space eye against the current display plane.
+        // At the trigger angle with zero separation, this still maps exactly
+        // onto the original rectangular display.
+        let along = eyeY * sin(current) - eyeZ * cos(current)
+        let depth = max(eyeY * cos(current) + eyeZ * sin(current), height / 10)
 
         let half = width / 2
         func project(_ x: Double, _ y: Double) -> CGPoint {
@@ -59,6 +81,8 @@ struct DepthGeometry {
 struct DepthTuning {
     var viewingDistance: Double = 2.7
     var recession: Double = 2
+    var observerElevation: Double = 20
+    var baseTilt: Double = 0
     var blurEvenness: Double = 0.4
     var dimReach: Double = 0.7
     var maxBlurRadius: Double = 55
@@ -279,6 +303,8 @@ final class DepthOverlay {
                 currentAngle: currentAngle,
                 viewingDistanceRatio: tuning.viewingDistance,
                 recession: tuning.recession,
+                observerElevation: tuning.observerElevation,
+                baseTilt: tuning.baseTilt,
                 screenSize: screenSize
             ),
             blurStrength: gradient.blurStrength(progress: progress),

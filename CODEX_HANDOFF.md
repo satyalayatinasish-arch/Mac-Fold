@@ -3,8 +3,8 @@
 **Repository root:** `/Users/Yatin/Documents/GitHub/Mac-Fold`  
 **Canonical GitHub repository:** `https://github.com/satyalayatinasish-arch/Mac-Fold`  
 **Current branch:** `main`  
-**Latest pushed commit on origin/main:** `bac0a5c` (`Add minimal menu bar UI, MacBook angle viz, liquid glass controls, and theme switcher`)  
-**Current app version:** `1.0.3` (targeted for `1.0.4` release with View-Based Fold Effect)  
+**Latest pushed commit before the 1.0.4 implementation:** `9cff634` (`Update CODEX_HANDOFF with full conversation, UI redesign, and in-flight view-based fold feature`)
+**Current app version:** `1.0.4` (locally built and packaged; release publication pending)
 **Last updated:** 2026-09-13 (local environment date)  
 
 ---
@@ -96,31 +96,27 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
   When the user sits higher (e.g. `alpha = 25°`), the screen surface turns away from their line of sight sooner during the closing arc. The perceived fold factor dynamically scales the effective `recession` and adjusts the projection vanishing point:
   `separation_effective = min(recession * travel * (1 + k_view * sin(alpha)), maxSeparationDegrees)`
 
-### In-Flight Progress:
+### Implementation Progress:
 - [x] **`Sources/MacFold/Preferences.swift`**:
   - Added `observerElevationAngle: Double` (default `20.0°`).
   - Added `baseTiltAngle: Double` (default `0.0°`).
   - Added keys, factory defaults, `defaults.register`, `defaults.double(forKey:)`, and `resetToDefaults()`.
   - Cleanly compiles with zero errors.
-- [ ] **`Sources/MacFold/DepthOverlay.swift`**:
-  - Extend `DepthTuning` struct: add `observerElevation: Double` and `baseTilt: Double`.
-  - Update `DepthGeometry.corners()` to incorporate `observerElevation` and `baseTilt`.
-- [ ] **`Sources/MacFold/LidController.swift`**:
-  - Pass `preferences.observerElevationAngle` and `preferences.baseTiltAngle` into `tuning` computed property.
-- [ ] **`Sources/MacFold/MacBookHingeView.swift`**:
-  - Add optional visual observer eye dot/arc at the elevation angle above the MacBook silhouette.
-- [ ] **`Sources/MacFold/SettingsView.swift`**:
-  - Add **Observer Position** settings group with two clean sliders:
-    - Eye Height (`observerElevationAngle`: 0°–60°)
-    - Base Tilt (`baseTiltAngle`: 0°–30°)
-- [ ] **`Localizable.strings` (en & zh-Hans)**:
-  - Add keys: `Observer Position`, `Eye Height`, `Base Tilt`, `Floor Level`, `Elevated`, `Flat`, `Tilted`.
-- [ ] **Build, Packaging, Documentation & Release**:
-  - Test `./build.sh` clean compile.
-  - Bump `Info.plist` version to `1.0.4`.
-  - Build DMG: `build/release/Mac-Fold-1.0.4.dmg`.
-  - Update `README.md` and screenshot.
-  - Commit all changes, push to `main`, and create GitHub release `v1.0.4`.
+- [x] **`Sources/MacFold/DepthOverlay.swift`**:
+  - `DepthTuning` now carries `observerElevation` and `baseTilt`.
+  - `DepthGeometry.corners()` uses a fixed observer position in room coordinates, adjusted for keyboard-base tilt, and applies a bounded elevation-based perceived-separation scale.
+- [x] **`Sources/MacFold/LidController.swift`**: passes both new preferences into `DepthTuning` every frame.
+- [x] **`Sources/MacFold/MacBookHingeView.swift`**: draws an observer eye and sight-line cue; it also labels a non-flat base setting.
+- [x] **`Sources/MacFold/SettingsView.swift`**: adds the **Observer Position** group with Eye Height (0°–60°) and Base Tilt (0°–30°).
+- [x] **`Localizable.strings` (en & zh-Hans)**: contains the observer-position labels and help text.
+- [x] **Build, packaging, and documentation**:
+  - `./build.sh --run` completed successfully.
+  - `Info.plist` is version `1.0.4`.
+  - `build/release/Mac-Fold-1.0.4.dmg` was verified by `hdiutil`.
+  - README documents View-Based Fold Geometry.
+- [ ] **Physical behavior and release publication**:
+  - User must test a real close/open through 90° with Screen Recording granted.
+  - Commit/push the implementation and create GitHub release `v1.0.4` after that test or when explicitly directed.
 
 ---
 
@@ -194,7 +190,8 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
 - **Packaging Command**:
   ```bash
   mkdir -p build/release
-  hdiutil create -volname 'Mac Fold' -srcfolder 'build/Mac Fold.app' -fs HFS+ -format UDZO build/release/Mac-Fold-1.0.4.dmg
+  # Use a staging folder containing Mac Fold.app plus an Applications link.
+  # See the build/release packaging procedure in the current agent turn.
   ```
 
 ---
@@ -211,22 +208,9 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
 
 ---
 
-## 7. IMMEDIATE NEXT STEPS TO COMPLETE THE IN-FLIGHT FEATURE
+## 7. IMMEDIATE NEXT STEPS
 
 When picking up work:
-1. Check `git status` (only `Sources/MacFold/Preferences.swift` is currently modified with the new properties).
-2. Edit `Sources/MacFold/DepthOverlay.swift`:
-   - Add `observerElevation` and `baseTilt` to `DepthTuning`.
-   - Update `DepthGeometry.corners()` to adjust separation/recession according to observer elevation and base tilt.
-3. Edit `Sources/MacFold/LidController.swift`:
-   - Update `tuning` property to pass `preferences.observerElevationAngle` and `preferences.baseTiltAngle`.
-4. Edit `Sources/MacFold/MacBookHingeView.swift`:
-   - Draw an observer indicator on the canvas at the eye angle.
-5. Edit `Sources/MacFold/SettingsView.swift`:
-   - Add the "Observer Position" section with sliders for Eye Height and Base Tilt.
-6. Edit `Localizable.strings` (en and zh-Hans) for the new labels.
-7. Compile and run: `./build.sh --run`.
-8. Bump version in `Resources/Info.plist` to `1.0.4`.
-9. Package DMG: `build/release/Mac-Fold-1.0.4.dmg`.
-10. Commit changes: `git commit -am "Implement observer-perspective view-based fold effect"` and push to `origin/main`.
-11. Create GitHub release `v1.0.4` with the DMG.
+1. Ask the user to physically test the already-running 1.0.4 app: above 90° (no effect), deliberate close below 90° (effect starts), observer sliders (perspective changes), and opening to 90° (effect ends exactly there).
+2. If the behavior passes, review `git diff`, commit the source/docs/handoff changes, push to `origin/main`, tag `v1.0.4`, and publish `build/release/Mac-Fold-1.0.4.dmg` to GitHub.
+3. If the behavior fails, collect the real angle and exact visible result, then adjust `DepthGeometry.corners()` rather than weakening the 90° gate or removing the velocity check.

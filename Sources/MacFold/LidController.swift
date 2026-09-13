@@ -609,6 +609,8 @@ final class LidController: ObservableObject {
         DepthTuning(
             viewingDistance: preferences.viewingDistance,
             recession: preferences.recession,
+            observerElevation: preferences.observerElevationAngle,
+            baseTilt: preferences.baseTiltAngle,
             blurEvenness: preferences.blurEvenness,
             dimReach: preferences.dimReach,
             maxBlurRadius: preferences.maxBlurRadius,

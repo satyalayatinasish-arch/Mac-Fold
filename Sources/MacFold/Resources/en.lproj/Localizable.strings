@@ -49,3 +49,8 @@
 "Elevated" = "Elevated";
 "Flat" = "Flat";
 "Tilted" = "Tilted";
+"Fold Effect" = "Fold Effect";
+"Leans screen when closing < 90°" = "Leans screen when closing < 90°";
+"Live Mirroring" = "Live Mirroring";
+"Mirrors live desktop via Metal" = "Mirrors live desktop via Metal";
+"View-Based Perspective" = "View-Based Perspective";

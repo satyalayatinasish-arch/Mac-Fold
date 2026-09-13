@@ -18,8 +18,6 @@ Close the lid below 90° to project your live built-in display into a Metal-rend
 
 <br>
 
-<img src="./assets/menu.png" width="360" alt="Mac Fold Menu Bar Settings">
-
 </div>
 
 ---
@@ -45,7 +43,8 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 - **Zero-Lag Motion Prediction**: Sensor velocity tracking anticipates rapid closing gestures, eliminating perceptible visual latency.
 - **Native macOS Settings**:
   - Accessible via the menu bar popover or standard <kbd>⌘</kbd> <kbd>,</kbd> Settings window.
-  - Full controls for master enable, live rendering toggle, fold threshold, blur span, blur radius, dimming reach, viewing distance, perspective recession, observer eye height, base tilt, and idle timeout.
+  - The menu-bar popover keeps the essential controls close at hand: enable/live toggles, an animated hinge view, Eye Height, Base Tilt, and a fold preview.
+  - The full Settings window provides fold threshold, blur span, blur radius, dimming reach, viewing distance, perspective recession, and idle timeout.
   - Optional live lid-angle display directly in the macOS menu bar.
 - **Click-Through & Non-Intrusive**: The overlay window is borderless, non-activating, and passes all mouse clicks through to background apps.
 - **Built-In Diagnostic CLI (`lidprobe`)**: Inspect hardware sensor availability, live angle streaming, refresh rates, and event logs.
@@ -75,12 +74,15 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 | **Open Settings Window** | Press <kbd>⌘</kbd> <kbd>,</kbd> while Mac Fold is active |
 | **Quit Mac Fold** | Press <kbd>⌘</kbd> <kbd>Q</kbd> |
 | **Menu Bar Quick Controls** | Click the Mac Fold icon in the menu bar |
+| **View-Based Perspective** | Adjust Eye Height and Base Tilt in the menu-bar popover or Settings |
 | **Trigger Fold Effect** | Deliberately close the MacBook display below 90° |
 | **Dismiss Fold Effect** | Open the lid back to 90° |
 
 ### View-Based Perspective
 
-In **Settings → Observer Position**, use **Eye Height** to describe how far your eyes are above the screen centre and **Base Tilt** when the keyboard deck is not flat on a desk. These controls adjust only the perspective projection after the fold begins; they do not move the strict 90° start/stop boundary.
+In the **menu-bar popover** or **Settings → Observer Position**, use **Eye Height** to describe how far your eyes are above the screen centre and **Base Tilt** when the keyboard deck is not flat on a desk. These controls adjust only the perspective projection after the fold begins; they do not move the strict 90° start/stop boundary.
+
+> The popover screenshot is intentionally omitted until it can be recaptured from the current app. The prior image did not show the new observer controls and would have been misleading.
 
 ---
 

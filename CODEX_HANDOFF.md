@@ -40,7 +40,7 @@ Implemented & committed (commit `bac0a5c`):
    - A dedicated minimal menu bar popover separate from the full Settings window.
    - Header with animated `ThemeSwitchButton`.
    - Embedded `MacBookHingeView` displaying live angle.
-   - Quick toggles for Depth Effect and Live Mirroring.
+   - Quick toggles for Depth Effect and Live Mirroring, plus compact Eye Height and Base Tilt sliders for the view-based perspective.
    - Prominent `LiquidGlassActionButton` ("Test Fold Effect").
    - `SettingsPillBar` at bottom with `[ Settings ]` (opens full window) and `[ Quit ]`.
 2. **`Sources/MacFold/MacBookHingeView.swift`**:
@@ -63,7 +63,7 @@ Implemented & committed (commit `bac0a5c`):
    - Window dimensions updated to 380x620.
 7. **Localizations & Assets**:
    - Updated `Localizable.strings` (en and zh-Hans).
-   - Updated `assets/menu.png` with new dark mode screenshot (commit `ca79c8f`).
+   - Updated `assets/menu.png` with a dark mode screenshot (commit `ca79c8f`); the README no longer embeds it because it predates the observer controls and macOS screenshot permission was unavailable for a truthful replacement.
    - Modernized `.github/workflows/release.yml` runner from `macos-26` to `macos-15`.
 
 ### Phase 3: View-Based Fold Effect (In-Flight)
@@ -147,7 +147,7 @@ In room coordinates (origin at screen bottom hinge, Z forward toward viewer, Y u
 │       ├── AppDelegate.swift           App lifecycle, Cmd+, and Cmd+Q menus
 │       ├── Preferences.swift           UserDefaults storage (threshold, theme, observer angles)
 │       ├── StatusItemController.swift  NSStatusItem and NSPopover hosting MenuBarView
-│       ├── MenuBarView.swift           Minimal popover: hinge view, quick toggles, liquid buttons
+│       ├── MenuBarView.swift           Minimal popover: hinge view, quick toggles, observer sliders, liquid buttons
 │       ├── MacBookHingeView.swift      Dynamic SwiftUI Canvas MacBook side profile
 │       ├── LiquidGlass.swift           Liquid glass button styles, pill buttons, theme switcher
 │       ├── SettingsView.swift          Full settings pane UI (SwiftUI)

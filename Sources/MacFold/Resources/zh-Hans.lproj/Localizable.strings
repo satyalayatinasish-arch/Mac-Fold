@@ -49,3 +49,8 @@
 "Elevated" = "抬高";
 "Flat" = "平放";
 "Tilted" = "倾斜";
+"Fold Effect" = "折叠效果";
+"Leans screen when closing < 90°" = "屏幕合至 90° 以下时向后倾斜。";
+"Live Mirroring" = "实时镜像";
+"Mirrors live desktop via Metal" = "通过 Metal 实时镜像桌面。";
+"View-Based Perspective" = "基于视角的透视";

@@ -6,6 +6,7 @@ struct SettingsView: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var controller: LidController
     @ObservedObject var viewerTracker: ViewerPositionTracker
+    @ObservedObject var updateController: UpdateController
 
     /// Empty means following the system language.
     @AppStorage("settingsLanguage") private var language = ""
@@ -70,6 +71,7 @@ struct SettingsView: View {
                         perspectiveGroup
                         observerPositionGroup
                         cameraAssistedGroup
+                        updateGroup
                     }
                     .padding(.horizontal, Self.inset)
                     .padding(.vertical, 10)
@@ -229,6 +231,44 @@ struct SettingsView: View {
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var updateGroup: some View {
+        group(localized("Updates")) {
+            toggleRow(
+                localized("Automatically check for updates"),
+                isOn: $preferences.isAutomaticUpdateChecks,
+                help: localized("Checks the public Mac Fold release feed once per day. It never installs an update without your approval.")
+            )
+            HStack {
+                Text(updateStatusText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if updateController.status == .updateAvailable {
+                    Button(localized("Get Update"), action: updateController.openLatestRelease)
+                } else {
+                    Button(localized("Check for Updates"), action: updateController.checkForUpdates)
+                        .disabled(updateController.status == .checking)
+                }
+            }
+            .controlSize(.small)
+            Text(localized("In-place installation is enabled only after the signed updater setup in AUTO_UPDATE_CHECKLIST.md is complete."))
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var updateStatusText: String {
+        switch updateController.status {
+        case .idle: return localized("No update check has run yet")
+        case .checking: return localized("Checking for updates…")
+        case .upToDate: return localized("Mac Fold is up to date")
+        case .updateAvailable:
+            return String(format: localized("Version %@ is available"), updateController.latestVersion ?? "")
+        case .failed: return localized("Could not check for updates")
         }
     }
 

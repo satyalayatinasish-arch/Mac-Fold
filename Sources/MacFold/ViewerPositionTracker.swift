@@ -41,6 +41,11 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
     private var calibrationElevationAngle: Double?
     private var calibrationViewingDistance: Double?
 
+    /// The neutral eye elevation used when no one-off distance calibration is
+    /// available. Face position moves this value continuously at runtime.
+    private static let neutralEyeElevation: Double = 20
+    private static let verticalCameraFieldOfView: Double = 55
+
     func start() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -151,7 +156,9 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
                 publishNoFace()
                 return
             }
-            publish(faceCenterY: Double(face.boundingBox.midY), faceHeight: Double(face.boundingBox.height))
+            let faceCenterY = Double(face.boundingBox.midY)
+            let eyeCenterY = normalizedEyeCenterY(for: face, in: sampleBuffer) ?? faceCenterY
+            publish(eyeCenterY: eyeCenterY, faceHeight: Double(face.boundingBox.height))
         } catch {
             publishNoFace()
         }
@@ -163,26 +170,43 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
         }
     }
 
-    private func publish(faceCenterY: Double, faceHeight: Double) {
+    private func normalizedEyeCenterY(for face: VNFaceObservation, in sampleBuffer: CMSampleBuffer) -> Double? {
+        guard let pixels = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
+        let size = CGSize(width: CVPixelBufferGetWidth(pixels), height: CVPixelBufferGetHeight(pixels))
+        var points: [CGPoint] = []
+        if let leftEye = face.landmarks?.leftEye {
+            points += leftEye.pointsInImage(imageSize: size)
+        }
+        if let rightEye = face.landmarks?.rightEye {
+            points += rightEye.pointsInImage(imageSize: size)
+        }
+        guard !points.isEmpty, size.height > 0 else { return nil }
+        return Double(points.reduce(0) { $0 + $1.y } / CGFloat(points.count) / size.height)
+    }
+
+    private func publish(eyeCenterY: Double, faceHeight: Double) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            self.lastFaceCenterY = faceCenterY
+            self.lastFaceCenterY = eyeCenterY
             self.lastFaceHeight = faceHeight
             self.isFaceVisible = true
 
-            guard let baselineY = self.calibrationFaceCenterY,
-                  let baselineHeight = self.calibrationFaceHeight,
-                  let baselineElevation = self.calibrationElevationAngle,
-                  let baselineDistance = self.calibrationViewingDistance,
-                  faceHeight > 0 else { return }
-
-            // Vision's normalized Y axis rises upward. A 55° vertical camera
-            // field-of-view approximation is deliberately bounded: it tracks
-            // relative seated movement after calibration, not absolute pose.
-            let elevation = min(max(baselineElevation + (faceCenterY - baselineY) * 55, 0), 60)
-            let distance = min(max(baselineDistance * baselineHeight / faceHeight, 1), 6)
+            // Vision's normalized Y axis rises upward. This converts the eye
+            // position in the live camera frame into a screen-relative angle
+            // on every frame; no calibration step is required for eye height.
+            let halfField = Self.verticalCameraFieldOfView * .pi / 360
+            let cameraOffset = atan(tan(halfField) * (eyeCenterY - 0.5) * 2) * 180 / .pi
+            let elevation = min(max(Self.neutralEyeElevation + cameraOffset, 0), 60)
             self.estimatedElevationAngle = elevation
-            self.estimatedViewingDistance = distance
+
+            // A single RGB camera cannot reliably derive absolute distance
+            // without a known physical reference. Keep that estimate opt-in
+            // and relative to the user's explicit calibration baseline.
+            if let baselineHeight = self.calibrationFaceHeight,
+               let baselineDistance = self.calibrationViewingDistance,
+               faceHeight > 0 {
+                self.estimatedViewingDistance = min(max(baselineDistance * baselineHeight / faceHeight, 1), 6)
+            }
         }
     }
 }

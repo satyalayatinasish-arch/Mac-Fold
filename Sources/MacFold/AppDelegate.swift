@@ -6,6 +6,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var controller: LidController?
     private var viewerTracker: ViewerPositionTracker?
+    private var updateController: UpdateController?
     private var statusItemController: StatusItemController?
     private var settingsWindowController: SettingsWindowController?
 
@@ -14,24 +15,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let preferences = Preferences.shared
         let controller = LidController(preferences: preferences)
         let viewerTracker = ViewerPositionTracker()
+        let updateController = UpdateController()
         self.controller = controller
         self.viewerTracker = viewerTracker
+        self.updateController = updateController
         let settingsWindow = SettingsWindowController(
             preferences: preferences,
             controller: controller,
-            viewerTracker: viewerTracker
+            viewerTracker: viewerTracker,
+            updateController: updateController
         )
         self.settingsWindowController = settingsWindow
         statusItemController = StatusItemController(
             controller: controller,
             preferences: preferences,
             viewerTracker: viewerTracker,
+            updateController: updateController,
             openSettings: { [weak settingsWindow] in
                 settingsWindow?.showSettings()
             }
         )
         installApplicationMenu()
         controller.start()
+        updateController.checkIfDue()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -47,6 +53,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(sender)
     }
 
+    @objc private func checkForUpdates(_ sender: Any?) {
+        updateController?.checkForUpdates()
+    }
+
     private func installApplicationMenu() {
         let mainMenu = NSMenu()
         let applicationItem = NSMenuItem(title: "Mac Fold", action: nil, keyEquivalent: "")
@@ -59,6 +69,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         )
         settingsItem.target = self
         applicationMenu.addItem(settingsItem)
+        let updatesItem = NSMenuItem(
+            title: "Check for Updates…",
+            action: #selector(checkForUpdates(_:)),
+            keyEquivalent: ""
+        )
+        updatesItem.target = self
+        applicationMenu.addItem(updatesItem)
         applicationMenu.addItem(.separator())
 
         let quitItem = NSMenuItem(

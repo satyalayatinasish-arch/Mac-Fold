@@ -10,6 +10,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     private let preferences: Preferences
     private let controller: LidController
     private let viewerTracker: ViewerPositionTracker
+    private let updateController: UpdateController
     private var titleTimer: Timer?
     private var barWindowMoved: NSObjectProtocol?
 
@@ -17,11 +18,13 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         controller: LidController,
         preferences: Preferences,
         viewerTracker: ViewerPositionTracker,
+        updateController: UpdateController,
         openSettings: @escaping () -> Void
     ) {
         self.controller = controller
         self.preferences = preferences
         self.viewerTracker = viewerTracker
+        self.updateController = updateController
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
 
@@ -43,6 +46,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
             preferences: preferences,
             controller: controller,
             viewerTracker: viewerTracker,
+            updateController: updateController,
             onOpenSettings: { [weak self] in
                 self?.popover.performClose(nil)
                 openSettings()

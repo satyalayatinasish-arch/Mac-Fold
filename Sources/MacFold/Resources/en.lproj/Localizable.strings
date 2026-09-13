@@ -69,3 +69,15 @@
 "Camera tracking" = "Camera tracking";
 "Looking for face" = "Looking for face";
 "Manual calibration" = "Manual calibration";
+"Updates" = "Updates";
+"Automatically check for updates" = "Automatically check for updates";
+"Checks the public Mac Fold release feed once per day. It never installs an update without your approval." = "Checks the public Mac Fold release feed once per day. It never installs an update without your approval.";
+"Get Update" = "Get Update";
+"Check for Updates" = "Check for Updates";
+"In-place installation is enabled only after the signed updater setup in AUTO_UPDATE_CHECKLIST.md is complete." = "In-place installation is enabled only after the signed updater setup in AUTO_UPDATE_CHECKLIST.md is complete.";
+"No update check has run yet" = "No update check has run yet";
+"Checking for updates…" = "Checking for updates…";
+"Mac Fold is up to date" = "Mac Fold is up to date";
+"Version %@ is available" = "Version %@ is available";
+"Could not check for updates" = "Could not check for updates";
+"Get Version %@" = "Get Version %@";

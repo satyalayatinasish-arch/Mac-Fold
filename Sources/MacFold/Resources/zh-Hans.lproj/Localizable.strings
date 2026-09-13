@@ -69,3 +69,15 @@
 "Camera tracking" = "摄像头跟踪中";
 "Looking for face" = "正在寻找人脸";
 "Manual calibration" = "手动校准";
+"Updates" = "更新";
+"Automatically check for updates" = "自动检查更新";
+"Checks the public Mac Fold release feed once per day. It never installs an update without your approval." = "每天检查一次公开的 Mac Fold 发布源；未经你的同意，绝不会安装更新。";
+"Get Update" = "获取更新";
+"Check for Updates" = "检查更新";
+"In-place installation is enabled only after the signed updater setup in AUTO_UPDATE_CHECKLIST.md is complete." = "只有完成 AUTO_UPDATE_CHECKLIST.md 中的签名更新器配置后，才能启用应用内安装。";
+"No update check has run yet" = "尚未检查更新";
+"Checking for updates…" = "正在检查更新…";
+"Mac Fold is up to date" = "Mac Fold 已是最新版本";
+"Version %@ is available" = "版本 %@ 可用";
+"Could not check for updates" = "无法检查更新";
+"Get Version %@" = "获取版本 %@";

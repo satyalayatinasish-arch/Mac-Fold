@@ -5,11 +5,17 @@ import SwiftUI
 @MainActor
 final class SettingsWindowController: NSWindowController {
 
-    init(preferences: Preferences, controller: LidController, viewerTracker: ViewerPositionTracker) {
+    init(
+        preferences: Preferences,
+        controller: LidController,
+        viewerTracker: ViewerPositionTracker,
+        updateController: UpdateController
+    ) {
         let content = SettingsView(
             preferences: preferences,
             controller: controller,
             viewerTracker: viewerTracker,
+            updateController: updateController,
             onQuit: { NSApp.terminate(nil) }
         )
         let hostingController = NSHostingController(rootView: content)

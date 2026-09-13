@@ -24,12 +24,13 @@ final class Preferences: ObservableObject {
         static let observerElevationAngle = "observerElevationAngle"
         static let baseTiltAngle = "baseTiltAngle"
         static let isCameraViewTracking = "isCameraViewTracking"
+        static let isAutomaticUpdateChecks = "isAutomaticUpdateChecks"
 
         static let all = [
             isEnabled, isTimeoutEnabled, thresholdAngle, blurSpan, maxBlurRadius,
             maxDim, viewingDistance, recession, blurEvenness, dimReach,
             showsAngleInMenuBar, isLivePicture, appTheme,
-            observerElevationAngle, baseTiltAngle, isCameraViewTracking,
+            observerElevationAngle, baseTiltAngle, isCameraViewTracking, isAutomaticUpdateChecks,
         ]
     }
 
@@ -50,6 +51,7 @@ final class Preferences: ObservableObject {
         Key.observerElevationAngle: 20.0,
         Key.baseTiltAngle: 0.0,
         Key.isCameraViewTracking: false,
+        Key.isAutomaticUpdateChecks: false,
     ]
 
     /// Master switch for the depth effect.
@@ -151,6 +153,10 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(isCameraViewTracking, forKey: Key.isCameraViewTracking) }
     }
 
+    @Published var isAutomaticUpdateChecks: Bool {
+        didSet { defaults.set(isAutomaticUpdateChecks, forKey: Key.isAutomaticUpdateChecks) }
+    }
+
     /// Eye distance in screen heights, at the two ends of the perspective
     /// slider. The panel offers the strength, which runs the other way.
     static let farthestEye: Double = 6
@@ -202,6 +208,7 @@ final class Preferences: ObservableObject {
         observerElevationAngle = defaults.double(forKey: Key.observerElevationAngle)
         baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
         isCameraViewTracking = defaults.bool(forKey: Key.isCameraViewTracking)
+        isAutomaticUpdateChecks = defaults.bool(forKey: Key.isAutomaticUpdateChecks)
     }
 
     func resetToDefaults() {
@@ -224,5 +231,6 @@ final class Preferences: ObservableObject {
         observerElevationAngle = defaults.double(forKey: Key.observerElevationAngle)
         baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
         isCameraViewTracking = defaults.bool(forKey: Key.isCameraViewTracking)
+        isAutomaticUpdateChecks = defaults.bool(forKey: Key.isAutomaticUpdateChecks)
     }
 }

@@ -34,7 +34,7 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 
 - **Metal-Accelerated 3D Perspective**: Smooth GPU-rendered fold geometry with realistic depth projection, dynamic blur gradients, and progressive dimming.
 - **View-Based Fold Geometry**: Tune eye height and keyboard-base tilt so the perspective responds to where you are viewing the MacBook from, not only to hinge travel.
-- **Camera-Assisted Viewpoint**: With explicit permission, the built-in camera can track a calibrated face position locally and continuously refine eye elevation and viewing distance. Frames are never recorded or uploaded.
+- **Automatic Eye-Position Viewpoint**: With explicit permission, the built-in camera detects the live left/right eye landmarks locally and continuously adjusts the view elevation. Frames are never recorded or uploaded.
 - **Real-Time Desktop Mirroring**: High-performance display capture via `ScreenCaptureKit` at 30 fps. Mac Fold automatically excludes its own windows to eliminate visual recursion loops.
 - **Strict 90° Boundary Threshold**:
   - **At or above 90°**: No overlay or visual effect is shown.
@@ -87,11 +87,11 @@ In the **menu-bar popover** or **Settings → Observer Position**, use **Eye Hei
 
 ### Camera-Assisted Calibration
 
-Enable **Use camera for viewer position**, sit naturally, then press **Calibrate**. Mac Fold processes frames only in memory to estimate relative eye height and viewing distance; it does not save or upload video. The camera is physically mounted in the lid, so it cannot independently determine the keyboard deck’s angle relative to gravity. Set **Base Tilt** manually when the MacBook is on a stand or an angled surface.
+Enable **Use camera for viewer position** and Mac Fold automatically updates eye height from the live left/right eye landmarks. Press **Calibrate** only when you also want an optional relative viewing-distance baseline. Frames are processed only in memory and are never saved or uploaded. The default **Lean back** setting is `1×`, which counter-rotates the captured content to keep it in its original comfortable position while the physical display follows the hinge. The camera is physically mounted in the lid, so it cannot independently determine the keyboard deck’s angle relative to gravity. Set **Base Tilt** manually when the MacBook is on a stand or an angled surface.
 
 ## Auto Updates
 
-Mac Fold currently uses versioned DMGs and does not silently self-update. A secure in-app updater requires a Developer ID signature, notarization, a signed HTTPS update feed, and explicit user approval. See [AUTO_UPDATE_CHECKLIST.md](AUTO_UPDATE_CHECKLIST.md) before enabling it.
+Mac Fold can automatically check the public GitHub release feed once a day and exposes **Check for Updates…** and **Get Update** controls. The app opens the verified release when an update is found. It does **not** replace itself yet: a secure in-place updater requires a Developer ID signature, notarization, a signed HTTPS appcast, and user approval. See [AUTO_UPDATE_CHECKLIST.md](AUTO_UPDATE_CHECKLIST.md) before enabling that final installation step.
 
 ---
 

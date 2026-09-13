@@ -7,6 +7,7 @@ struct MenuBarView: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var controller: LidController
     @ObservedObject var viewerTracker: ViewerPositionTracker
+    @ObservedObject var updateController: UpdateController
     @AppStorage("settingsLanguage") private var language = ""
 
     let onOpenSettings: () -> Void
@@ -140,6 +141,20 @@ struct MenuBarView: View {
             .padding(.horizontal, 14)
             .padding(.top, 10)
 
+            if updateController.status == .updateAvailable {
+                Button {
+                    updateController.openLatestRelease()
+                } label: {
+                    Label(
+                        String(format: localized("Get Version %@"), updateController.latestVersion ?? ""),
+                        systemImage: "arrow.down.circle"
+                    )
+                    .font(.caption.weight(.semibold))
+                }
+                .buttonStyle(.borderless)
+                .padding(.top, 8)
+            }
+
             Divider()
                 .padding(.horizontal, 12)
                 .padding(.top, 12)
@@ -162,6 +177,7 @@ struct MenuBarView: View {
         .onChange(of: viewerTracker.estimatedViewingDistance) { _, _ in
             applyCameraEstimate()
         }
+        .onAppear { updateController.checkIfDue() }
     }
 
     private func quickToggleRow(

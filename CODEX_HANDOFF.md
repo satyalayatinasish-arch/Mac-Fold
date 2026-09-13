@@ -222,3 +222,10 @@ When picking up work:
 - It cannot automatically and accurately measure base tilt relative to the ground: the built-in camera is attached to the moving lid, not the keyboard base or the room. `baseTiltAngle` remains user calibrated/manual by design.
 - `NSCameraUsageDescription` is set in `Resources/Info.plist`; the full settings window has calibration/status controls and the menu bar has a compact tracking switch/status.
 - `AUTO_UPDATE_CHECKLIST.md` records the required Developer ID, notarization, signed appcast, and user-consent work before a self-updater may be enabled. No fake/insecure self-update mechanism was added.
+
+### Automatic eye tracking and update checking (v1.0.6, current uncommitted work)
+
+- `ViewerPositionTracker` now uses Vision left/right eye landmarks every processed frame to update eye elevation automatically. It no longer requires a calibration step for elevation; calibration is only retained as an optional relative viewing-distance baseline.
+- The fold’s default `recession = 1` is the comfortable-content hold: it counter-rotates the captured image while the physical lid continues to follow the hinge. Do not alter strict 90° activation/release behavior.
+- `UpdateController` checks the public GitHub releases API once per day when the user enables automatic checks. The app has Settings and app-menu checks, and opens the newest release when one is found.
+- It intentionally does not self-replace yet. A true installer requires the Developer ID / notarization / signed EdDSA appcast process in `AUTO_UPDATE_CHECKLIST.md`; an ad-hoc release cannot safely provide the requested in-place update button.

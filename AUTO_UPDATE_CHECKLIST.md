@@ -1,6 +1,6 @@
 # Mac Fold Auto-Update Checklist
 
-Mac Fold does **not** currently self-update. A safe macOS updater must not be added to an ad-hoc-signed app or pointed at arbitrary GitHub downloads. Complete every item below before enabling in-app update checks.
+Mac Fold currently checks the public GitHub release feed automatically when enabled and can open a verified release for the user. It does **not** yet replace itself. A safe macOS updater must not be added to an ad-hoc-signed app or pointed at arbitrary GitHub downloads. Complete every item below before enabling in-place installation.
 
 ## Required foundation
 

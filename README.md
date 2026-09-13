@@ -54,6 +54,26 @@ Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped 
 
 ## Installation
 
+### Via Homebrew (Recommended)
+
+You can install Mac Fold directly via [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask satyalayatinasish-arch/mac-fold/mac-fold
+```
+
+Or tap the repository first:
+
+```bash
+brew tap satyalayatinasish-arch/mac-fold
+brew install --cask mac-fold
+```
+
+To upgrade in the future:
+```bash
+brew upgrade --cask mac-fold
+```
+
 ### Pre-Built DMG
 
 1. Download the latest release from [**GitHub Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases).
@@ -151,6 +171,21 @@ streaming at 30 Hz, press ctrl-c to stop
  134.90°
  ...
 ```
+
+---
+
+## Hardware Compatibility Matrix
+
+Mac Fold communicates directly with the Apple internal lid-angle sensor via IOKit HID (`0x05AC`, usage page `0x20`, usage `0x8A`).
+
+| Device Category | Supported Models | Hinge Sensor Support | Sensor Resolution | Notes |
+|---|---|---|---|---|
+| **MacBook Air** | M1, M2, M3, M4 (2020+) | Supported | Report 7 (0.01°) | High-precision angle stream |
+| **MacBook Pro 14" & 16"** | M1 / M2 / M3 / M4 Pro & Max (2021+) | Supported | Report 7 (0.01°) | High-precision angle stream |
+| **MacBook Pro 13"** | M1, M2 (2020–2022) | Supported | Report 7 (0.01°) | High-precision angle stream |
+| **Intel MacBooks** | 2018–2020 models (with Apple T2) | Supported | Report 1 (1.0°) | Integer precision fallback |
+| **Legacy Intel MacBooks** | Pre-2018 MacBook models | Not Supported | None | Lacks internal hinge sensor |
+| **Desktop Macs** | iMac, Mac mini, Mac Studio, Mac Pro | Incompatible | N/A | No lid hardware; clean alert displayed |
 
 ---
 

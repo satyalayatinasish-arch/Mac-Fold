@@ -112,6 +112,19 @@ Implemented:
 3. **Localization**:
    - Added `Current Version` and `Version %@` strings to `en.lproj` and `zh-Hans.lproj`.
 
+### Phase 6: Repository Discoverability & Homebrew Cask Distribution
+User requested:
+> *"suggest any changes how could actually make this github repo used by many people"* -> *"yay do them"*
+
+Implemented:
+1. **GitHub Topics**:
+   - Added discoverability tags via `gh repo edit`: `macos`, `swift`, `metal`, `screencapturekit`, `macbook`, `macbook-pro`, `macbook-air`, `apple-silicon`, `hid-sensor`, `menu-bar-app`, `open-source`.
+2. **Homebrew Cask Formula (`Casks/mac-fold.rb`)**:
+   - Created native Homebrew Cask pointing to release `1.0.7` DMG with verified SHA-256 hash.
+   - Allows one-liner terminal installation: `brew install --cask satyalayatinasish-arch/mac-fold/mac-fold`.
+3. **Hardware Compatibility Matrix in `README.md`**:
+   - Documented exact Apple Silicon & Intel T2 model support with HID Report details.
+
 ---
 
 ## 3. COMPLETE CODEBASE ARCHITECTURE & DIRECTORY STRUCTURE
@@ -119,6 +132,8 @@ Implemented:
 ```text
 /Users/Yatin/Documents/GitHub/Mac-Fold
 ├── .github/workflows/release.yml       CI: Xcode build, sign, notarize, release (macos-15)
+├── Casks/
+│   └── mac-fold.rb                     Homebrew Cask formula for brew install
 ├── Package.swift                       SwiftPM manifest (macOS 14, Swift v5 mode)
 ├── README.md                           User documentation, install guide, feature overview
 ├── CODEX_HANDOFF.md                    Comprehensive handoff document
@@ -199,6 +214,7 @@ Implemented:
 
 ## 5. RECENT COMMITS ON MAIN
 
+- `df9a070 Display app version in Settings and MenuBar, fix update controller bug, optimize camera queue`
 - `47bab3f Add hinge-compensated camera eye tracking and bump to 1.0.7`
 - `cb74eae Add automatic eye tracking and update checks`
 - `5696c82 Add camera-assisted viewpoint calibration`

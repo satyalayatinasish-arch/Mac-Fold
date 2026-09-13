@@ -140,6 +140,7 @@ Implemented:
 ├── AUTO_UPDATE_CHECKLIST.md            Guide for production in-place auto-updater setup
 ├── LICENSE                             Apache 2.0 license
 ├── NOTICE                              Upstream attribution (preserve)
+├── SECURITY.md                         Project security and privacy policy
 ├── assets/
 │   └── menu.png                        Dark mode UI screenshot in README
 ├── build.sh                            Canonical build, sign, bundle, and launch script

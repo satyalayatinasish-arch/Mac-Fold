@@ -4,17 +4,27 @@
 
 # Mac Fold
 
-**A lid-angle-driven desktop fold effect for compatible MacBooks.**
+**A lid-angle-driven desktop fold effect for laptops.**
 
 [![Release](https://img.shields.io/github/v/release/satyalayatinasish-arch/Mac-Fold?style=flat-square&color=blue)](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest)
-[![Platform](https://img.shields.io/badge/platform-macOS%2014.0%2B-lightgrey?style=flat-square)](https://www.apple.com/macos/)
-[![Architecture](https://img.shields.io/badge/arch-Apple%20Silicon%20%7C%20Intel-orange?style=flat-square)](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest)
-[![Swift](https://img.shields.io/badge/Swift-6.0-F05138?style=flat-square&logo=swift&logoColor=white)](https://swift.org)
+[![macOS](https://img.shields.io/badge/macOS%2014%2B-black?style=flat-square&logo=apple&logoColor=white)](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest)
+[![Windows](https://img.shields.io/badge/Windows%2010%2F11-0078D6?style=flat-square&logo=windows&logoColor=white)](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest)
+[![Linux](https://img.shields.io/badge/Linux%20x86__64-FCC624?style=flat-square&logo=linux&logoColor=black)](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](LICENSE)
 
-Close the lid below 90° to project your live built-in display into a Metal-rendered fold effect. As the lid unfolds, the screen returns flat and seamlessly ends at 90°.
+Close the lid below 90° to project your live desktop into a perspective fold effect. As the lid unfolds, the screen returns flat and seamlessly ends at 90°.
 
 [**All Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases) &nbsp;•&nbsp; [**Report an Issue**](https://github.com/satyalayatinasish-arch/Mac-Fold/issues)
+
+### 📥 Direct Downloads (Latest Release v1.0.7)
+
+| Operating System | Click to Download | Format | Supported Devices / Requirements |
+|:---|:---|:---:|:---|
+| 🍏 **macOS** | [**Download Mac-Fold-1.0.7.dmg**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-1.0.7.dmg) | `.dmg` installer | macOS 14+ (Sonoma, Sequoia) · Apple Silicon & Intel |
+| 🪟 **Windows** | [**Download Mac-Fold-Windows.exe**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-Windows.exe) | `.exe` portable | Windows 10 & 11 (64-bit) · Portable standalone |
+| 🐧 **Linux** | [**Download Mac-Fold-Linux.AppImage**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-Linux.AppImage) | `.AppImage` | Linux x86_64 (Ubuntu, Fedora, Arch, Debian) |
+
+*(You can also browse all versions and build artifacts in [All Releases](https://github.com/satyalayatinasish-arch/Mac-Fold/releases).)*
 
 <br>
 
@@ -24,9 +34,26 @@ Close the lid below 90° to project your live built-in display into a Metal-rend
 
 ## Overview
 
-Mac Fold is a lightweight macOS menu bar utility designed for MacBooks equipped with an internal lid-angle sensor. When you physically fold your MacBook's display below 90°, Mac Fold captures your live desktop and projects it onto a GPU-accelerated 3D perspective fold overlay. The content appears to remain spatially upright while your physical lid closes downward.
+Mac Fold is a lightweight system-tray utility that creates a 3D perspective fold effect on your laptop screen when the lid closes below 90°. Your live desktop is captured and projected onto a perspective-warped overlay that responds to the physical hinge angle, observer eye position, and keyboard base tilt.
 
-* **Available in:** English and Simplified Chinese (简体中文).
+* **macOS** (Swift + Metal): Native menu-bar app with GPU-accelerated rendering via Metal and ScreenCaptureKit. Reads the Apple HID lid-angle sensor for 0.01° precision. Available in English and Simplified Chinese.
+* **Windows** (Python): System-tray app using OpenCV perspective transforms and `mss` screen capture. Reads the same HID sensor protocol or uses WinRT accelerometer.
+* **Linux** (Python): System-tray app using the same OpenCV pipeline. Reads IIO accelerometer sysfs or ACPI lid state.
+
+---
+
+## Platform Feature Matrix
+
+| Feature | macOS | Windows | Linux |
+|---|:---:|:---:|:---:|
+| System tray / menu bar | ✅ | ✅ | ✅ |
+| Live fold overlay | Metal GPU | OpenCV | OpenCV |
+| Lid angle sensor (HID) | ✅ 0.01° | ✅ (if present) | ✅ (if present) |
+| Accelerometer base tilt | N/A | WinRT | IIO sysfs |
+| Camera eye tracking | Vision | OpenCV Haar | OpenCV Haar |
+| Live desktop mirroring | ScreenCaptureKit | mss | mss |
+| Localization (en/zh) | ✅ | — | — |
+| Packaging | .app / .dmg | .exe (PyInstaller) | AppImage |
 
 ---
 

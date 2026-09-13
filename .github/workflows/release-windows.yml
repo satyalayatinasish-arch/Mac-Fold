@@ -1,0 +1,90 @@
+name: Release Windows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'platform/shared/**'
+      - 'platform/windows/**'
+      - '.github/workflows/release-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mac-fold-release-windows
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: platform/windows/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r platform/windows/requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          cd platform/windows
+          pyinstaller \
+            --onefile \
+            --noconsole \
+            --name "Mac-Fold-Windows" \
+            --add-data "../shared;shared" \
+            --hidden-import shared.geometry \
+            --hidden-import shared.eye_tracker \
+            main.py
+        shell: bash
+
+      - name: Verify build
+        run: test -f platform/windows/dist/Mac-Fold-Windows.exe
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mac-Fold-Windows
+          path: platform/windows/dist/Mac-Fold-Windows.exe
+          if-no-files-found: error
+
+      - name: Publish to dev release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(gh api "repos/$GH_REPO/commits/main" --jq .sha)"
+          if [[ "$MAIN_SHA" != "$GITHUB_SHA" ]]; then
+            echo "A newer commit is on main. Skipping release upload."
+            exit 0
+          fi
+          # Upload asset to existing dev release or create one
+          if gh release view dev >/dev/null 2>&1; then
+            # Delete existing Windows asset if present, then re-upload
+            gh release delete-asset dev Mac-Fold-Windows.exe --yes 2>/dev/null || true
+            gh release upload dev platform/windows/dist/Mac-Fold-Windows.exe
+          else
+            gh release create dev platform/windows/dist/Mac-Fold-Windows.exe \
+              --target "$GITHUB_SHA" --title "Mac Fold dev" \
+              --prerelease --latest=false \
+              --notes "Development build. Download the asset for your platform."
+          fi
+        shell: bash

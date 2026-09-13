@@ -177,12 +177,38 @@ Implemented:
 
 ---
 
+### Phase 9: Cross-Platform Windows & Linux Ports
+User requested:
+> *"develop the same app for windows and linux laptops add the versions to git and git hub keep the latest releases of each os version below all release link so they can click right there and download the app"*
+
+Implemented:
+1. **Shared Math & Tracker Modules (`platform/shared/`)**:
+   - `geometry.py`: Clean Python port of `DepthGeometry.corners()` and `DepthTuning`.
+   - `eye_tracker.py`: OpenCV Haar Cascade face & eye tracker computing observer elevation and base tilt angles.
+2. **Windows Standalone App (`platform/windows/`)**:
+   - `lid_sensor_win.py`: Apple HID protocol reader via `hidapi` + WinRT accelerometer fallback.
+   - `main.py`: Complete Tkinter + PIL + `mss` + `pystray` system-tray app with live HingeCanvas illustration, Popover, and perspective fold overlay.
+   - `MacFold.spec`: PyInstaller configuration producing standalone `Mac-Fold-Windows.exe`.
+3. **Linux Standalone App (`platform/linux/`)**:
+   - `lid_sensor_linux.py`: IIO accelerometer sysfs reader (`in_accel_*`) + ACPI lid switch (`/proc/acpi/button/lid/*/state`) + HID reader.
+   - `main.py`: Tkinter + `pystray` system-tray app supporting X11/Wayland with full fold overlay.
+   - `build.sh`: PyInstaller build script with AppImage packaging capability.
+4. **CI/CD Release Automation (`.github/workflows/`)**:
+   - `release-windows.yml`: Builds and packages `Mac-Fold-Windows.exe` on `windows-latest`.
+   - `release-linux.yml`: Builds and packages `Mac-Fold-Linux.AppImage` on `ubuntu-latest`.
+5. **Direct Download Links**:
+   - Prominently placed directly beneath the `All Releases` link in `README.md` with one-click direct asset URLs for macOS (`.dmg`), Windows (`.exe`), and Linux (`.AppImage`).
+
+---
+
 ## 3. COMPLETE CODEBASE ARCHITECTURE & DIRECTORY STRUCTURE
 
 ```text
 /Users/Yatin/Documents/GitHub/Mac-Fold
 ├── .github/workflows/
 │   ├── release.yml                     CI: Xcode build, sign, notarize, release (macos-15)
+│   ├── release-windows.yml             CI: Windows PyInstaller build (windows-latest)
+│   ├── release-linux.yml               CI: Linux AppImage build (ubuntu-latest)
 │   ├── codacy.yml                      Codacy static analysis workflow
 │   └── codeql.yml                      CodeQL automated security analysis
 ├── Casks/
@@ -197,6 +223,20 @@ Implemented:
 ├── assets/
 │   └── menu.png                        Dark mode UI screenshot in README
 ├── build.sh                            Canonical build, sign, bundle, and launch script
+├── platform/
+│   ├── shared/
+│   │   ├── geometry.py                 Pure-Python port of DepthGeometry perspective math
+│   │   └── eye_tracker.py              OpenCV face/eye tracking & viewer elevation engine
+│   ├── windows/
+│   │   ├── lid_sensor_win.py           HID sensor + WinRT accelerometer sensor reader
+│   │   ├── main.py                     Tkinter + pystray + mss Windows desktop fold app
+│   │   ├── requirements.txt            Python dependencies for Windows
+│   │   └── MacFold.spec                PyInstaller build specification
+│   └── linux/
+│       ├── lid_sensor_linux.py         Linux IIO sysfs + ACPI lid state reader
+│       ├── main.py                     Tkinter + pystray Linux desktop fold app
+│       ├── requirements.txt            Python dependencies for Linux
+│       └── build.sh                    PyInstaller & AppImage build script
 ├── Resources/
 │   ├── AppIcon.icns                    Mac Fold side-profile app icon
 │   ├── AppIcon.svg                     Vector source of app icon
@@ -273,6 +313,8 @@ Implemented:
 ---
 
 ## 5. RECENT COMMITS ON MAIN
+
+- `b3226d8 Calculate base-to-ground angle and align profile animation with reference design`
 
 - `fe00d7e Security & privacy hardening: entitlements, privacy manifest, sleep/wake camera guard, URL validation`
 - `787e590 Update Cask depends_on macos to :sonoma syntax`

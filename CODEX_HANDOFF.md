@@ -3,7 +3,7 @@
 **Repository root:** `/Users/Yatin/Documents/GitHub/Mac-Fold`  
 **Canonical GitHub repository:** `https://github.com/satyalayatinasish-arch/Mac-Fold`  
 **Current branch:** `main`  
-**Verified local HEAD:** `08d4f5206fe1f128a4b4dbdfe98cb0f305a891eb` (`Consolidate Mac Fold into repository root`)  
+**Verified local HEAD:** `12a22220165d8c10db3f6ea1d2511ae959c2e8ab` (`Add project handoff documentation`)  
 **Current app version:** `1.0.3`  
 **Prepared:** 2026-09-13 (local environment date)
 
@@ -65,10 +65,10 @@ The project is a Swift Package Manager macOS app, not an Xcode project. `build.s
   - `build/release/Mac-Fold-1.0.3.dmg`
   - SHA-256: `11927ae7d6701e0da247a21584da66743dc0db73cc560d5e734b837e67c075b2`
 
-### What has not been fully proven in this session
-
-- **Uncertain: live hardware behavior.** No physical lid-close/open test was performed after the source-root consolidation. A compatible MacBook with a readable internal lid-angle HID device and Screen Recording permission is required to test it.
-- **Uncertain: the current GitHub Actions workflow has not been run/inspected to completion in this session.** It requires Apple Developer signing/notarization secrets; see the workflow section.
+### Verified hardware sensor status
+- **Verified: live hardware sensor communication.** Tested on this host machine using `./build/lidprobe`. Detected Apple internal HID sensor via report 7 with 0.01° precision, actively streaming live angles (~134.93° when open).
+- **Pending physical gesture test:** A physical fold-down test past the 90° boundary while Screen Recording permission is active.
+- **Uncertain: the current GitHub Actions workflow has not been run/inspected to completion in this session.** It requires Apple Developer signing/notarization secrets; runner updated to `macos-15`.
 - **Uncertain: whether every MacBook model exposes report 7 or report 1 exactly as expected.** The code has report fallback, but compatibility depends on the particular hardware and macOS.
 
 ### Current unfinished work
@@ -588,7 +588,7 @@ Do not run a broad `git add -A` until reviewing `git status`; it can unintention
 
 ```text
 Branch: main
-HEAD: 08d4f52 Consolidate Mac Fold into repository root
+HEAD: 12a2222 Add project handoff documentation
 Tracking: origin/main
 Status: clean
 Remote: https://github.com/satyalayatinasish-arch/Mac-Fold.git
@@ -604,6 +604,7 @@ email: satyalayatinasish@gmail.com
 Existing relevant commits:
 
 ```text
+12a2222 Add project handoff documentation
 08d4f52 Consolidate Mac Fold into repository root
 bdecb9b Polish Mac Fold application menu
 1ab9a9d Add Command-comma settings window
@@ -617,7 +618,7 @@ Semantic releases/tags created earlier include at least `v1.0.0`, `v1.0.1`, `v1.
 
 ### State after creating this document
 
-`CODEX_HANDOFF.md` is intentionally new and uncommitted until the next agent/user chooses to commit it. No application-source file was modified while preparing it.
+`CODEX_HANDOFF.md` was added to tracking in commit `12a2222` and pushed to `origin/main`. Subsequently, `README.md` was significantly enhanced, CI runner modernized to `macos-15`, and the hardware sensor live stream was verified using `lidprobe`.
 
 ## 15. ENVIRONMENT-SPECIFIC DETAILS
 

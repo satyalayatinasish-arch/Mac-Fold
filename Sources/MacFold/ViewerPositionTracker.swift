@@ -40,6 +40,8 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
     private var calibrationFaceHeight: Double?
     private var calibrationElevationAngle: Double?
     private var calibrationViewingDistance: Double?
+    private var hingeAngle: Double = 90
+    private var baseTiltAngle: Double = 0
 
     /// The neutral eye elevation used when no one-off distance calibration is
     /// available. Face position moves this value continuously at runtime.
@@ -73,6 +75,15 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
         session.stopRunning()
         status = .inactive
         isFaceVisible = false
+    }
+
+    /// The camera rotates with the lid. Feed the physical hinge reading so a
+    /// closing lid is not misinterpreted as the viewer moving their eyes.
+    func updateLidGeometry(hingeAngle: Double, baseTiltAngle: Double) {
+        DispatchQueue.main.async { [weak self] in
+            self?.hingeAngle = hingeAngle
+            self?.baseTiltAngle = baseTiltAngle
+        }
     }
 
     /// Establishes the current seated position as the reference for later
@@ -191,12 +202,14 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             self.lastFaceHeight = faceHeight
             self.isFaceVisible = true
 
-            // Vision's normalized Y axis rises upward. This converts the eye
-            // position in the live camera frame into a screen-relative angle
-            // on every frame; no calibration step is required for eye height.
+            // Vision's normalized Y axis rises upward. The webcam's optical
+            // axis rotates with the lid, so combine its local eye angle with
+            // the measured physical screen angle before updating the room-
+            // relative observer elevation used by the renderer.
             let halfField = Self.verticalCameraFieldOfView * .pi / 360
             let cameraOffset = atan(tan(halfField) * (eyeCenterY - 0.5) * 2) * 180 / .pi
-            let elevation = min(max(Self.neutralEyeElevation + cameraOffset, 0), 60)
+            let cameraWorldElevation = self.hingeAngle + self.baseTiltAngle - 90
+            let elevation = min(max(cameraWorldElevation + cameraOffset, 0), 60)
             self.estimatedElevationAngle = elevation
 
             // A single RGB camera cannot reliably derive absolute distance

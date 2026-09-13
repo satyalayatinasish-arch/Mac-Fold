@@ -25,6 +25,7 @@ final class LidController: ObservableObject {
     let snapshotter = ScreenSnapshotter()
 
     private let preferences: Preferences
+    private let viewerTracker: ViewerPositionTracker
     private let sensor = LidAngleSensor()
     private let overlay = DepthOverlay()
     private let streamer = ScreenStreamer()
@@ -124,8 +125,9 @@ final class LidController: ObservableObject {
         }
     }
 
-    init(preferences: Preferences) {
+    init(preferences: Preferences, viewerTracker: ViewerPositionTracker) {
         self.preferences = preferences
+        self.viewerTracker = viewerTracker
         enabledSubscription = preferences.$isEnabled
             .removeDuplicates()
             .sink { [weak self] enabled in
@@ -256,6 +258,7 @@ final class LidController: ObservableObject {
         }
 
         rawAngle = angle
+        viewerTracker.updateLidGeometry(hingeAngle: angle, baseTiltAngle: preferences.baseTiltAngle)
         publish(angle: angle)
 
         if preferences.isEnabled {
@@ -678,6 +681,7 @@ final class LidController: ObservableObject {
         isClosingOut = false
         if let angle = sensor.angle() {
             rawAngle = angle
+            viewerTracker.updateLidGeometry(hingeAngle: angle, baseTiltAngle: preferences.baseTiltAngle)
             visualAngle.reset(to: angle)
         }
         setPollInterval(Self.idlePollInterval)

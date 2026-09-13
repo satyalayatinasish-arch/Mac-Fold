@@ -13,8 +13,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         Diagnostics.geometry.notice("launched, screen recording granted: \(CGPreflightScreenCaptureAccess())")
         let preferences = Preferences.shared
-        let controller = LidController(preferences: preferences)
         let viewerTracker = ViewerPositionTracker()
+        let controller = LidController(preferences: preferences, viewerTracker: viewerTracker)
         let updateController = UpdateController()
         self.controller = controller
         self.viewerTracker = viewerTracker

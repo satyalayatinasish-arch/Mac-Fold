@@ -4,7 +4,7 @@
 **Canonical GitHub repository:** `https://github.com/satyalayatinasish-arch/Mac-Fold`  
 **Current branch:** `main`  
 **Latest implementation commit:** `48cd5bb` (`Implement observer-perspective fold geometry`)
-**Current app version:** `1.0.4` (locally built and packaged; release publication pending)
+**Current app version:** `1.0.7` (locally built, signed, and packaged)
 **Last updated:** 2026-09-13 (local environment date)  
 
 ---
@@ -229,3 +229,10 @@ When picking up work:
 - The fold’s default `recession = 1` is the comfortable-content hold: it counter-rotates the captured image while the physical lid continues to follow the hinge. Do not alter strict 90° activation/release behavior.
 - `UpdateController` checks the public GitHub releases API once per day when the user enables automatic checks. The app has Settings and app-menu checks, and opens the newest release when one is found.
 - It intentionally does not self-replace yet. A true installer requires the Developer ID / notarization / signed EdDSA appcast process in `AUTO_UPDATE_CHECKLIST.md`; an ad-hoc release cannot safely provide the requested in-place update button.
+
+
+### Hinge-compensated camera eye tracking (v1.0.7)
+
+- `ViewerPositionTracker` now receives live physical hinge angles and base tilt directly from `LidController`.
+- The webcam physically tilts as the MacBook lid moves. The tracker calculates room-relative camera elevation: `cameraWorldElevation = hingeAngle + baseTiltAngle - 90`, and combines it with the optical eye offset `cameraOffset`. This prevents lid closure from being misread as the observer ducking or moving their head.
+- Built and validated `build/release/Mac-Fold-1.0.7.dmg` with SHA-256 `96416fd47f66556a12da4d16287766138fea83452d7b7677b4bb9fcbfdad3029`.

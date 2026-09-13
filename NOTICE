@@ -1,5 +1,4 @@
-iPhone Duo includes code derived from LidAngleSensor by Sam Gold.
-Source: https://github.com/samhenrigold/LidAngleSensor
-License: Apache License 2.0. The original license text is at https://www.apache.org/licenses/LICENSE-2.0
+Mac Duo
+Copyright 2026 Makito
 
-The lid-angle access technique uses undocumented macOS hardware behavior. It is intended for local experimentation and not suitable for Mac App Store distribution.
+Originally developed by Makito.

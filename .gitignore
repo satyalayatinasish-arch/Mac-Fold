@@ -1,6 +1,8 @@
 .DS_Store
 .build/
+build/
 outputs/
 work/LidAngleSensor/
-work/Mac-Fold/.build/
-work/Mac-Fold/build/
+*.xcuserstate
+.swiftpm/
+.claude/work/

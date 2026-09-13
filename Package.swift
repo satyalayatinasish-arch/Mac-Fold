@@ -2,12 +2,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "iPhoneDuo",
+    name: "MacFold",
+    defaultLocalization: "en",
     platforms: [.macOS(.v14)],
-    products: [
-        .executable(name: "iPhoneDuo", targets: ["iPhoneDuo"])
-    ],
     targets: [
-        .executableTarget(name: "iPhoneDuo")
+        .target(
+            name: "LidAngleKit",
+            path: "Sources/LidAngleKit",
+            swiftSettings: [.swiftLanguageMode(.v5)]
+        ),
+        .executableTarget(
+            name: "MacFold",
+            dependencies: ["LidAngleKit"],
+            path: "Sources/MacFold",
+            resources: [.process("Resources")],
+            swiftSettings: [.swiftLanguageMode(.v5)]
+        ),
+        .executableTarget(
+            name: "lidprobe",
+            dependencies: ["LidAngleKit"],
+            path: "Sources/lidprobe",
+            swiftSettings: [.swiftLanguageMode(.v5)]
+        ),
     ]
 )

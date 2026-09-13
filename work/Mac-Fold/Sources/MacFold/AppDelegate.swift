@@ -33,7 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func installApplicationMenu() {
         let mainMenu = NSMenu()
-        let applicationItem = NSMenuItem()
+        let applicationItem = NSMenuItem(title: "Mac Fold", action: nil, keyEquivalent: "")
         let applicationMenu = NSMenu(title: "Mac Fold")
 
         let settingsItem = NSMenuItem(

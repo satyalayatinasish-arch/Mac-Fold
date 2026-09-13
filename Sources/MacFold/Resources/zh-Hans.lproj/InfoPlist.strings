@@ -1,0 +1,4 @@
+/* InfoPlist.strings (Simplified Chinese) */
+
+"NSCameraUsageDescription" = "Mac Fold 仅将摄像头用于可选的设备端观看者位置校准。摄像头画面完全在内存中处理，绝不录制、存储或上传。";
+"NSScreenCaptureUsageDescription" = "Mac Fold 需要屏幕录制权限以将内置显示屏画面实时投射到 3D 视角折叠效果中。屏幕内容仅在 GPU 显存中处理，绝不录制、存储或传输。";

@@ -628,7 +628,13 @@ final class LidController: ObservableObject {
         workspace.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.suspend() }
         }
+        workspace.addObserver(forName: NSWorkspace.screensDidSleepNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.suspend() }
+        }
         workspace.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.resume() }
+        }
+        workspace.addObserver(forName: NSWorkspace.screensDidWakeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.resume() }
         }
         NotificationCenter.default.addObserver(
@@ -663,12 +669,16 @@ final class LidController: ObservableObject {
     private func suspend() {
         Diagnostics.lid.notice("suspend")
         isSuspended = true
+        viewerTracker.stop()
         stopEffectAndCapture()
     }
 
     private func resume() {
         Diagnostics.lid.notice("resume")
         isSuspended = false
+        if preferences.isCameraViewTracking {
+            viewerTracker.start()
+        }
         // A fresh baseline, so waking with a nearly shut lid does not read as
         // closing movement.
         lastChangedAngle = nil

@@ -39,7 +39,11 @@ cp "$BINARY" "$BUNDLE/Contents/MacOS/MacFold"
 # SwiftPM resolves Bundle.module relative to the application bundle.
 cp -R "$BIN_PATH/MacFold_MacFold.bundle" "$BUNDLE/Contents/Resources/"
 cp Resources/Info.plist "$BUNDLE/Contents/Info.plist"
+cp Resources/PrivacyInfo.xcprivacy "$BUNDLE/Contents/Resources/PrivacyInfo.xcprivacy"
 cp LICENSE NOTICE "$BUNDLE/Contents/Resources/"
+mkdir -p "$BUNDLE/Contents/Resources/en.lproj" "$BUNDLE/Contents/Resources/zh-Hans.lproj"
+cp Sources/MacFold/Resources/en.lproj/InfoPlist.strings "$BUNDLE/Contents/Resources/en.lproj/"
+cp Sources/MacFold/Resources/zh-Hans.lproj/InfoPlist.strings "$BUNDLE/Contents/Resources/zh-Hans.lproj/"
 if [ -f Resources/AppIcon.icns ]; then
   cp Resources/AppIcon.icns "$BUNDLE/Contents/Resources/AppIcon.icns"
 fi
@@ -50,6 +54,7 @@ if [[ "$SIGN_IDENTITY" == - ]]; then
   TIMESTAMP=--timestamp=none
 fi
 codesign --force --options runtime "$TIMESTAMP" \
+  --entitlements Resources/MacFold.entitlements \
   --sign "$SIGN_IDENTITY" "$BUNDLE"
 codesign --verify --strict --verbose=1 "$BUNDLE"
 

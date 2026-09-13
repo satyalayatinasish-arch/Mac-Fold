@@ -77,7 +77,11 @@ final class UpdateController: ObservableObject {
     }
 
     func openLatestRelease() {
-        guard let releaseURL else { return }
+        guard let releaseURL,
+              releaseURL.scheme == "https",
+              let host = releaseURL.host,
+              host == "github.com" || host == "www.github.com"
+        else { return }
         NSWorkspace.shared.open(releaseURL)
     }
 

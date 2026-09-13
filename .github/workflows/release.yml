@@ -130,7 +130,8 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $APP_VERSION" "$APP_PATH/Contents/Info.plist"
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_VERSION" "$APP_PATH/Contents/Info.plist"
           codesign --force --sign "$SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" \
-            --timestamp --options runtime "$APP_PATH"
+            --timestamp --options runtime \
+            --entitlements Resources/MacFold.entitlements "$APP_PATH"
           codesign --verify --strict --all-architectures "$APP_PATH"
           INFO="$(codesign -dv --verbose=4 "$APP_PATH" 2>&1)"
           TEAM="$(printf '%s\n' "$INFO" | awk -F= '/^TeamIdentifier=/{print $2}')"

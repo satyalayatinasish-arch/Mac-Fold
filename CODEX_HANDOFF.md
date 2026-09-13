@@ -125,6 +125,34 @@ Implemented:
 3. **Hardware Compatibility Matrix in `README.md`**:
    - Documented exact Apple Silicon & Intel T2 model support with HID Report details.
 
+### Phase 7: GitHub Security Hardening & Application Privacy Patches
+User requested:
+> *"enable all the security related settings on the github and create security patches of the application so does not give any privacy troubles"*
+
+Implemented:
+1. **GitHub Security Settings Enabled**:
+   - Secret Scanning (`secret_scanning`): Enabled.
+   - Secret Scanning Push Protection (`secret_scanning_push_protection`): Enabled.
+   - Private Vulnerability Reporting (`private-vulnerability-reporting`): Enabled.
+   - Dependabot Alerts & Automated Security Updates: Enabled.
+   - CodeQL Advanced Analysis Workflow (`.github/workflows/codeql.yml`): Active.
+2. **Hardened Runtime Entitlements (`Resources/MacFold.entitlements`)**:
+   - Configured least-privilege entitlements: `com.apple.security.device.camera` (for local vision tracking), `com.apple.security.network.client` (outbound HTTPS release checks), explicitly forbidding server sockets.
+   - Wired into `build.sh` and `.github/workflows/release.yml`.
+3. **Apple Privacy Manifest (`Resources/PrivacyInfo.xcprivacy`)**:
+   - Formally declared `NSPrivacyTracking: false` and empty collected data types (`NSPrivacyCollectedDataTypes: []`).
+   - Declared local UserDefaults access category under reason `CA92.1`.
+4. **Privacy Descriptions & Localization (`Info.plist` & `InfoPlist.strings`)**:
+   - Added explicit `NSScreenCaptureUsageDescription` explaining GPU-only memory processing.
+   - Refined `NSCameraUsageDescription` explaining in-memory zero-persistence eye tracking.
+   - Created localized `en.lproj/InfoPlist.strings` and `zh-Hans.lproj/InfoPlist.strings`.
+5. **Display Sleep & Power Privacy Guards**:
+   - `LidController.swift`: Observed `screensDidSleepNotification` & `screensDidWakeNotification`.
+   - On screen or system sleep, immediately halts camera capture (`viewerTracker.stop()`) to turn off the physical camera LED, and releases active screen streams.
+   - On display wake, cleanly resumes tracking if user enabled camera mode.
+6. **URL & Navigation Security**:
+   - `UpdateController.swift`: Validates HTTPS protocol and trusted domain (`github.com`) before dispatching to `NSWorkspace.open`.
+
 ---
 
 ## 3. COMPLETE CODEBASE ARCHITECTURE & DIRECTORY STRUCTURE
@@ -133,7 +161,8 @@ Implemented:
 /Users/Yatin/Documents/GitHub/Mac-Fold
 ├── .github/workflows/
 │   ├── release.yml                     CI: Xcode build, sign, notarize, release (macos-15)
-│   └── codacy.yml                      Codacy static analysis workflow
+│   ├── codacy.yml                      Codacy static analysis workflow
+│   └── codeql.yml                      CodeQL automated security analysis
 ├── Casks/
 │   └── mac-fold.rb                     Homebrew Cask formula for brew install
 ├── Package.swift                       SwiftPM manifest (macOS 14, Swift v5 mode)
@@ -149,7 +178,9 @@ Implemented:
 ├── Resources/
 │   ├── AppIcon.icns                    Mac Fold side-profile app icon
 │   ├── AppIcon.svg                     Vector source of app icon
-│   └── Info.plist                      Bundle ID local.yatin.mac-fold, version 1.0.7 (7)
+│   ├── Info.plist                      Bundle ID local.yatin.mac-fold, version 1.0.7 (7)
+│   ├── MacFold.entitlements            Hardened runtime entitlements
+│   └── PrivacyInfo.xcprivacy           Apple Privacy Manifest
 ├── Sources/
 │   ├── LidAngleKit/
 │   │   └── LidAngleSensor.swift        IOKit HID sensor reader (Apple vendor 0x05AC, usage 0x8A)
@@ -180,8 +211,12 @@ Implemented:
 │       ├── CapturedFrame.swift         Pixel buffer frame wrapper
 │       ├── Diagnostics.swift           OSLog logging categories
 │       └── Resources/
-│           ├── en.lproj/Localizable.strings
-│           └── zh-Hans.lproj/Localizable.strings
+│           ├── en.lproj/
+│           │   ├── Localizable.strings
+│           │   └── InfoPlist.strings   Localized privacy usage descriptions
+│           └── zh-Hans.lproj/
+│               ├── Localizable.strings
+│               └── InfoPlist.strings   Localized privacy usage descriptions
 ```
 
 ---

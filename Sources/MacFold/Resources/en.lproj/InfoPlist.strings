@@ -1,0 +1,4 @@
+/* InfoPlist.strings (English) */
+
+"NSCameraUsageDescription" = "Mac Fold uses the camera only for optional, on-device viewer-position calibration. Camera frames are processed strictly in memory and are never recorded, saved, or uploaded.";
+"NSScreenCaptureUsageDescription" = "Mac Fold requires screen recording permission strictly to project your local display onto the 3D perspective fold effect in real time. Screen content is processed entirely in GPU memory and is never recorded, saved, or transmitted.";

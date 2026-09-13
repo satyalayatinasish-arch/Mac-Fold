@@ -230,4 +230,10 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             }
         }
     }
+
+    deinit {
+        if session.isRunning {
+            session.stopRunning()
+        }
+    }
 }

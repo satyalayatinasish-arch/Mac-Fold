@@ -21,11 +21,14 @@ final class Preferences: ObservableObject {
         static let showsAngleInMenuBar = "showsAngleInMenuBar"
         static let isLivePicture = "isLivePicture"
         static let appTheme = "appTheme"
+        static let observerElevationAngle = "observerElevationAngle"
+        static let baseTiltAngle = "baseTiltAngle"
 
         static let all = [
             isEnabled, isTimeoutEnabled, thresholdAngle, blurSpan, maxBlurRadius,
             maxDim, viewingDistance, recession, blurEvenness, dimReach,
             showsAngleInMenuBar, isLivePicture, appTheme,
+            observerElevationAngle, baseTiltAngle,
         ]
     }
 
@@ -43,6 +46,8 @@ final class Preferences: ObservableObject {
         Key.showsAngleInMenuBar: false,
         Key.isLivePicture: true,
         Key.appTheme: "system",
+        Key.observerElevationAngle: 20.0,
+        Key.baseTiltAngle: 0.0,
     ]
 
     /// Master switch for the depth effect.
@@ -125,6 +130,20 @@ final class Preferences: ObservableObject {
         }
     }
 
+    /// Vertical angle (degrees) from the screen centre to the observer's eyes
+    /// above the horizontal. 0° = eyes level with screen; 20° = typical seated.
+    /// Range 0–60°. Higher values shift when the fold effect is felt to start.
+    @Published var observerElevationAngle: Double {
+        didSet { defaults.set(observerElevationAngle, forKey: Key.observerElevationAngle) }
+    }
+
+    /// Tilt of the MacBook base plane away from horizontal (degrees).
+    /// 0° = flat on desk (most common). Range 0–30°. Accounts for laptop stands
+    /// or angled surfaces and adjusts the screen-normal direction accordingly.
+    @Published var baseTiltAngle: Double {
+        didSet { defaults.set(baseTiltAngle, forKey: Key.baseTiltAngle) }
+    }
+
     /// Eye distance in screen heights, at the two ends of the perspective
     /// slider. The panel offers the strength, which runs the other way.
     static let farthestEye: Double = 6
@@ -173,6 +192,8 @@ final class Preferences: ObservableObject {
         showsAngleInMenuBar = defaults.bool(forKey: Key.showsAngleInMenuBar)
         isLivePicture = defaults.bool(forKey: Key.isLivePicture)
         appTheme = defaults.string(forKey: Key.appTheme) ?? "system"
+        observerElevationAngle = defaults.double(forKey: Key.observerElevationAngle)
+        baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
     }
 
     func resetToDefaults() {
@@ -192,5 +213,7 @@ final class Preferences: ObservableObject {
         showsAngleInMenuBar = defaults.bool(forKey: Key.showsAngleInMenuBar)
         isLivePicture = defaults.bool(forKey: Key.isLivePicture)
         appTheme = "system"
+        observerElevationAngle = defaults.double(forKey: Key.observerElevationAngle)
+        baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
     }
 }

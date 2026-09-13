@@ -111,6 +111,9 @@ struct SettingsView: View {
         .onChange(of: viewerTracker.estimatedViewingDistance) { _, _ in
             applyCameraEstimate()
         }
+        .onChange(of: viewerTracker.estimatedBaseTiltAngle) { _, _ in
+            applyCameraEstimate()
+        }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             hasScreenPermission = CGPreflightScreenCaptureAccess()
         }
@@ -496,6 +499,10 @@ struct SettingsView: View {
         if let distance = viewerTracker.estimatedViewingDistance,
            abs(preferences.viewingDistance - distance) >= 0.1 {
             preferences.viewingDistance = distance
+        }
+        if let baseTilt = viewerTracker.estimatedBaseTiltAngle,
+           abs(preferences.baseTiltAngle - baseTilt) >= 0.3 {
+            preferences.baseTiltAngle = baseTilt
         }
     }
 }

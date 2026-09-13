@@ -64,6 +64,24 @@ struct MacBookHingeView: View {
 
                 Spacer()
 
+                if baseTiltAngle > 0.5 {
+                    HStack(spacing: 3) {
+                        Image(systemName: "angle")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.cyan)
+                        Text(String(format: "Base %.0f°", baseTiltAngle))
+                            .font(.system(size: 10, design: .rounded).monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.primary.opacity(0.10), lineWidth: 0.5)
+                    )
+                }
+
                 Text(String(format: "%.1f°", clampedAngle))
                     .font(.system(compact ? .caption : .subheadline, design: .rounded).monospacedDigit().bold())
                     .foregroundStyle(isFoldActive ? Color.orange : Color.primary)
@@ -84,97 +102,158 @@ struct MacBookHingeView: View {
         let width = size.width
         let height = size.height
 
-        // Coordinate space:
-        // Hinge pivot at rear left
-        let pivotX = width * 0.32
-        let pivotY = height * 0.78
+        // Ground plane height
+        let groundY = height * 0.82
+        let pivotX = width * 0.28
+        let pivotY = groundY - 6.0
 
-        let baseLength = width * 0.56
-        let baseThickness: CGFloat = 8
-        let lidLength = width * 0.52
-        let lidThickness: CGFloat = 4.5
+        let baseLength = width * 0.58
+        let baseThickness: CGFloat = compact ? 7.0 : 8.5
+        let lidLength = width * 0.54
+        let lidThickness: CGFloat = compact ? 4.0 : 4.8
 
-        let rad = clampedAngle * .pi / 180.0
+        let baseTilt = max(0, min(baseTiltAngle, 35))
+        let baseRad = baseTilt * .pi / 180.0
 
-        // 1. Draw angle arc
-        let arcRadius: CGFloat = 32
-        var arcPath = Path()
-        arcPath.addArc(
-            center: CGPoint(x: pivotX, y: pivotY),
-            radius: arcRadius,
-            startAngle: .degrees(0),
-            endAngle: .degrees(-clampedAngle),
-            clockwise: true
+        // 1. Soft ground contact shadow
+        let shadowWidth = baseLength * 1.08
+        let shadowRect = CGRect(
+            x: pivotX - 10,
+            y: groundY + (baseTilt > 0 ? 1 : 2),
+            width: shadowWidth,
+            height: compact ? 6 : 8
         )
-        context.stroke(
-            arcPath,
-            with: .color(isFoldActive ? Color.orange.opacity(0.7) : Color.accentColor.opacity(0.4)),
-            style: StrokeStyle(lineWidth: 1.5, dash: [3, 3])
-        )
-
-        // 2. Draw base shadow
-        let shadowRect = CGRect(x: pivotX - 8, y: pivotY + baseThickness + 1, width: baseLength + 14, height: 6)
         context.fill(
             Path(ellipseIn: shadowRect),
-            with: .color(Color.black.opacity(0.25))
+            with: .color(Color.black.opacity(0.38))
         )
 
+        // 2. Base vectors & geometry
+        // When base tilts, it slopes upward relative to the ground
+        let cosB = CGFloat(cos(baseRad))
+        let sinB = CGFloat(sin(baseRad))
+        let vBaseX = cosB
+        let vBaseY = -sinB
+
+        // Perpendicular vector for base thickness (downward/outward)
+        let nBaseX = sinB * baseThickness
+        let nBaseY = cosB * baseThickness
+
+        let baseTipX = pivotX + vBaseX * baseLength
+        let baseTipY = pivotY + vBaseY * baseLength
+
+        // If base is tilted to the ground, draw a subtle horizontal ground guide
+        if baseTilt > 1.0 {
+            var groundGuide = Path()
+            groundGuide.move(to: CGPoint(x: pivotX - 4, y: pivotY + nBaseY))
+            groundGuide.addLine(to: CGPoint(x: pivotX + baseLength, y: pivotY + nBaseY))
+            context.stroke(
+                groundGuide,
+                with: .color(Color.white.opacity(0.18)),
+                style: StrokeStyle(lineWidth: 1, dash: [3, 3])
+            )
+
+            // Small base tilt angle arc
+            var baseArc = Path()
+            baseArc.addArc(
+                center: CGPoint(x: pivotX, y: pivotY + nBaseY),
+                radius: 20,
+                startAngle: .degrees(0),
+                endAngle: .degrees(-baseTilt),
+                clockwise: true
+            )
+            context.stroke(
+                baseArc,
+                with: .color(Color.cyan.opacity(0.4)),
+                style: StrokeStyle(lineWidth: 1, dash: [2, 2])
+            )
+        }
+
         // 3. Draw Base (Keyboard deck)
+        // Draw smoothly rounded trapezoid / pill body
         var basePath = Path()
-        let baseRect = CGRect(x: pivotX - 4, y: pivotY, width: baseLength, height: baseThickness)
-        basePath.addRoundedRect(in: baseRect, cornerSize: CGSize(width: 3, height: 3))
+        basePath.move(to: CGPoint(x: pivotX, y: pivotY))
+        basePath.addLine(to: CGPoint(x: baseTipX, y: baseTipY))
+        basePath.addLine(to: CGPoint(x: baseTipX + nBaseX, y: baseTipY + nBaseY))
+        basePath.addLine(to: CGPoint(x: pivotX + nBaseX, y: pivotY + nBaseY))
+        basePath.closeSubpath()
 
         let baseGradient = Gradient(colors: [
-            Color(white: 0.75),
-            Color(white: 0.55),
-            Color(white: 0.40)
+            Color(white: 0.80),
+            Color(white: 0.58),
+            Color(white: 0.38)
         ])
         context.fill(
             basePath,
             with: .linearGradient(
                 baseGradient,
                 startPoint: CGPoint(x: pivotX, y: pivotY),
-                endPoint: CGPoint(x: pivotX, y: pivotY + baseThickness)
+                endPoint: CGPoint(x: pivotX + nBaseX, y: pivotY + nBaseY)
             )
         )
-        context.stroke(basePath, with: .color(Color.black.opacity(0.4)), lineWidth: 0.75)
+        context.stroke(basePath, with: .color(Color.black.opacity(0.40)), lineWidth: 0.8)
 
-        // Subtle rubber feet
-        let foot1 = CGRect(x: pivotX + 16, y: pivotY + baseThickness, width: 10, height: 2)
-        let foot2 = CGRect(x: pivotX + baseLength - 26, y: pivotY + baseThickness, width: 10, height: 2)
-        context.fill(Path(roundedRect: foot1, cornerRadius: 1), with: .color(Color(white: 0.25)))
-        context.fill(Path(roundedRect: foot2, cornerRadius: 1), with: .color(Color(white: 0.25)))
+        // Front rounded bumper
+        let frontRadius = baseThickness * 0.45
+        var frontCap = Path()
+        frontCap.addEllipse(in: CGRect(
+            x: baseTipX - frontRadius,
+            y: baseTipY + (nBaseY - frontRadius * 2) * 0.5,
+            width: frontRadius * 2,
+            height: frontRadius * 2
+        ))
+        context.fill(frontCap, with: .color(Color(white: 0.65)))
 
-        // Subtle side port (USB-C)
-        let portRect = CGRect(x: pivotX + 18, y: pivotY + 2.5, width: 7, height: 2.5)
-        context.fill(Path(roundedRect: portRect, cornerRadius: 1), with: .color(Color(white: 0.2)))
+        // Subtle side port (USB-C cutout)
+        let portOffset = baseLength * 0.16
+        let portX = pivotX + vBaseX * portOffset
+        let portY = pivotY + vBaseY * portOffset + nBaseY * 0.35
+        var portPath = Path()
+        portPath.addRoundedRect(
+            in: CGRect(x: portX, y: portY, width: 8, height: 3),
+            cornerSize: CGSize(width: 1.5, height: 1.5)
+        )
+        context.fill(portPath, with: .color(Color(white: 0.18)))
+
+        // Bottom rubber feet
+        let foot1X = pivotX + vBaseX * (baseLength * 0.14) + nBaseX
+        let foot1Y = pivotY + vBaseY * (baseLength * 0.14) + nBaseY
+        let foot2X = pivotX + vBaseX * (baseLength * 0.85) + nBaseX
+        let foot2Y = pivotY + vBaseY * (baseLength * 0.85) + nBaseY
+        var footPath = Path()
+        footPath.addRoundedRect(in: CGRect(x: foot1X, y: foot1Y, width: 9, height: 2), cornerSize: CGSize(width: 1, height: 1))
+        footPath.addRoundedRect(in: CGRect(x: foot2X, y: foot2Y, width: 9, height: 2), cornerSize: CGSize(width: 1, height: 1))
+        context.fill(footPath, with: .color(Color(white: 0.22)))
 
         // 4. Draw Display Lid
-        // Direction vector:
-        // Angle 0: pointing along +X (dx = 1, dy = 0)
-        // Angle 90: pointing along -Y (dx = 0, dy = -1)
-        // Angle 135: leaning back (dx = cos(135), dy = -sin(135))
-        let cosA = CGFloat(cos(rad))
-        let sinA = CGFloat(sin(rad))
+        // Total angle in standard Cartesian (counter-clockwise from +X):
+        // Lid extends from hinge at angle (clampedAngle - baseTilt)
+        let totalLidAngle = clampedAngle - baseTilt
+        let totalLidRad = totalLidAngle * .pi / 180.0
 
-        // Normal perpendicular vector pointing "upward/inward" from lid
-        let normX = -sinA * lidThickness
-        let normY = -cosA * lidThickness
+        let cosL = CGFloat(cos(totalLidRad))
+        let sinL = CGFloat(sin(totalLidRad))
+        let vLidX = cosL
+        let vLidY = -sinL
 
-        let tipX = pivotX + cosA * lidLength
-        let tipY = pivotY - sinA * lidLength
+        // Perpendicular vector for lid thickness (pointing upward/inward into hinge)
+        let nLidX = -sinL * lidThickness
+        let nLidY = -cosL * lidThickness
 
-        // Outer lid aluminum shell
+        let tipX = pivotX + vLidX * lidLength
+        let tipY = pivotY + vLidY * lidLength
+
+        // Outer aluminum lid shell
         var lidPath = Path()
         lidPath.move(to: CGPoint(x: pivotX, y: pivotY))
         lidPath.addLine(to: CGPoint(x: tipX, y: tipY))
-        lidPath.addLine(to: CGPoint(x: tipX + normX, y: tipY + normY))
-        lidPath.addLine(to: CGPoint(x: pivotX + normX, y: pivotY + normY))
+        lidPath.addLine(to: CGPoint(x: tipX + nLidX, y: tipY + nLidY))
+        lidPath.addLine(to: CGPoint(x: pivotX + nLidX, y: pivotY + nLidY))
         lidPath.closeSubpath()
 
         let lidGradient = Gradient(colors: [
-            Color(white: 0.82),
-            Color(white: 0.65),
+            Color(white: 0.85),
+            Color(white: 0.68),
             Color(white: 0.48)
         ])
         context.fill(
@@ -185,64 +264,126 @@ struct MacBookHingeView: View {
                 endPoint: CGPoint(x: tipX, y: tipY)
             )
         )
-        context.stroke(lidPath, with: .color(Color.black.opacity(0.35)), lineWidth: 0.75)
+        context.stroke(lidPath, with: .color(Color.black.opacity(0.38)), lineWidth: 0.8)
 
-        // Screen face (active display surface)
+        // Screen face (Active display surface with vibrant neon cyan glow, exactly like reference)
         var screenFacePath = Path()
         let screenOffset: CGFloat = 0.5
-        let sP0 = CGPoint(x: pivotX + normX * screenOffset, y: pivotY + normY * screenOffset)
-        let sP1 = CGPoint(x: tipX + normX * screenOffset, y: tipY + normY * screenOffset)
+        let sP0 = CGPoint(x: pivotX + nLidX * screenOffset, y: pivotY + nLidY * screenOffset)
+        let sP1 = CGPoint(x: tipX + nLidX * screenOffset, y: tipY + nLidY * screenOffset)
         screenFacePath.move(to: sP0)
         screenFacePath.addLine(to: sP1)
 
-        let screenColor = isFoldActive ? Color.orange : Color.cyan
+        let screenColor = isFoldActive
+            ? Color.orange
+            : Color(red: 0.05, green: 0.78, blue: 0.98) // Vibrant electric cyan from reference
+
+        // Outer glow
         context.stroke(
             screenFacePath,
-            with: .color(screenColor.opacity(0.85)),
-            style: StrokeStyle(lineWidth: 2, lineCap: .round)
+            with: .color(screenColor.opacity(0.35)),
+            style: StrokeStyle(lineWidth: compact ? 3.5 : 4.5, lineCap: .round)
+        )
+        // Core bright line
+        context.stroke(
+            screenFacePath,
+            with: .color(screenColor),
+            style: StrokeStyle(lineWidth: compact ? 1.8 : 2.4, lineCap: .round)
         )
 
-        // 5. Rear hinge barrel
-        let hingeRadius: CGFloat = 5
-        let hingeRect = CGRect(x: pivotX - hingeRadius, y: pivotY - hingeRadius + 1, width: hingeRadius * 2, height: hingeRadius * 2)
+        // 5. Dashed Hinge Angle Arc
+        // Measures opening angle between base and display lid
+        let arcRadius: CGFloat = compact ? 28 : 36
+        var arcPath = Path()
+        arcPath.addArc(
+            center: CGPoint(x: pivotX, y: pivotY),
+            radius: arcRadius,
+            startAngle: .degrees(-baseTilt),
+            endAngle: .degrees(-(baseTilt + clampedAngle)),
+            clockwise: true
+        )
+        context.stroke(
+            arcPath,
+            with: .color(isFoldActive ? Color.orange.opacity(0.75) : Color.white.opacity(0.38)),
+            style: StrokeStyle(lineWidth: 1.5, dash: [4, 4])
+        )
+
+        // 6. 3D Spherical Hinge Joint (Realistic metal sphere from reference image)
+        let hingeRadius: CGFloat = compact ? 6.5 : 8.5
+        let hingeCenter = CGPoint(x: pivotX, y: pivotY)
+        let hingeRect = CGRect(
+            x: hingeCenter.x - hingeRadius,
+            y: hingeCenter.y - hingeRadius,
+            width: hingeRadius * 2,
+            height: hingeRadius * 2
+        )
         var hingePath = Path()
         hingePath.addEllipse(in: hingeRect)
+
+        // Spherical 3D lighting: specular point at top-left
+        let specularCenter = CGPoint(
+            x: hingeCenter.x - hingeRadius * 0.32,
+            y: hingeCenter.y - hingeRadius * 0.32
+        )
         context.fill(
             hingePath,
             with: .radialGradient(
-                Gradient(colors: [Color(white: 0.9), Color(white: 0.4)]),
-                center: CGPoint(x: pivotX - 1, y: pivotY),
-                startRadius: 1,
+                Gradient(colors: [
+                    Color(white: 0.98),
+                    Color(white: 0.78),
+                    Color(white: 0.52),
+                    Color(white: 0.28)
+                ]),
+                center: specularCenter,
+                startRadius: 0.5,
                 endRadius: hingeRadius
             )
         )
-        context.stroke(hingePath, with: .color(Color.black.opacity(0.45)), lineWidth: 0.75)
+        context.stroke(hingePath, with: .color(Color.black.opacity(0.50)), lineWidth: 0.8)
 
-        // 6. Observer cue. It makes the selected eye elevation legible in the
-        // UI without changing the physical lid-angle illustration.
+        // 7. Observer Viewpoint & Sightline (Cyan dot & dashed sight line straight to screen center)
+        let screenCenter = CGPoint(
+            x: pivotX + vLidX * (lidLength * 0.5) + nLidX * 0.5,
+            y: pivotY + vLidY * (lidLength * 0.5) + nLidY * 0.5
+        )
+
         let eyeElevation = max(0, min(observerElevationAngle, 60)) * .pi / 180
-        let eyeDistance: CGFloat = compact ? 37 : 48
-        let eyeOrigin = CGPoint(x: pivotX + baseLength * 0.64, y: pivotY - 14)
+        let eyeDistance: CGFloat = compact ? 42 : 55
+        let eyeOrigin = CGPoint(
+            x: pivotX + baseLength * 0.65,
+            y: pivotY - 12 - (baseTilt > 0 ? sinB * 8 : 0)
+        )
         let eye = CGPoint(
             x: eyeOrigin.x + cos(eyeElevation) * eyeDistance,
             y: eyeOrigin.y - sin(eyeElevation) * eyeDistance
         )
+
         var sightLine = Path()
         sightLine.move(to: eye)
-        sightLine.addLine(to: CGPoint(x: pivotX + lidLength * 0.42, y: pivotY - sinA * lidLength * 0.42))
+        sightLine.addLine(to: screenCenter)
         context.stroke(
             sightLine,
-            with: .color(Color.cyan.opacity(0.42)),
-            style: StrokeStyle(lineWidth: 1, dash: [3, 3])
+            with: .color(Color(red: 0.05, green: 0.78, blue: 0.98).opacity(0.48)),
+            style: StrokeStyle(lineWidth: 1.2, dash: [4, 4])
         )
-        context.fill(Path(ellipseIn: CGRect(x: eye.x - 3, y: eye.y - 3, width: 6, height: 6)), with: .color(.cyan))
 
-        // A small base reference makes a non-flat base setting visible.
-        if abs(baseTiltAngle) > 0.1 {
-            let label = Text(String(format: "Base +%.0f°", baseTiltAngle))
-                .font(.system(size: compact ? 8 : 9, weight: .medium))
-                .foregroundStyle(.secondary)
-            context.draw(label, at: CGPoint(x: pivotX + baseLength * 0.57, y: pivotY + 20))
-        }
+        // Observer eye marker dot
+        let eyeDotRadius: CGFloat = compact ? 3.0 : 4.0
+        let eyeRect = CGRect(
+            x: eye.x - eyeDotRadius,
+            y: eye.y - eyeDotRadius,
+            width: eyeDotRadius * 2,
+            height: eyeDotRadius * 2
+        )
+        // Outer glow halo
+        context.fill(
+            Path(ellipseIn: eyeRect.insetBy(dx: -1.5, dy: -1.5)),
+            with: .color(Color(red: 0.05, green: 0.78, blue: 0.98).opacity(0.25))
+        )
+        // Bright cyan core
+        context.fill(
+            Path(ellipseIn: eyeRect),
+            with: .color(Color(red: 0.05, green: 0.78, blue: 0.98))
+        )
     }
 }

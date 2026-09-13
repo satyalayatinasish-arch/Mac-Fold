@@ -153,6 +153,28 @@ Implemented:
 6. **URL & Navigation Security**:
    - `UpdateController.swift`: Validates HTTPS protocol and trusted domain (`github.com`) before dispatching to `NSWorkspace.open`.
 
+### Phase 8: Keyboard Base-to-Ground Angle Calculation & Vector Illustration Alignment
+User requested:
+> *"also calculate the angle of keyboard or the base to the ground and update this animation plays in the menu bar so that the animation of the fold effect actually plays perfectly measuring all the angles the screen view to the and then update the git ang github and donot make any duplicates"*
+
+Implemented:
+1. **Base-to-Ground Angle Calculation (`ViewerPositionTracker.swift`)**:
+   - Extracted 3D head pitch (`face.pitch`) via Vision framework.
+   - Derived base tilt angle relative to gravity:
+     `baseTilt ≈ 90 - hingeAngle - pitchDegrees + cameraOffset`
+   - Clamped within `[0°, 35°]` and smoothed with exponential moving average (`alpha = 0.15`).
+   - Exposed `@Published var estimatedBaseTiltAngle: Double?`.
+2. **Auto-Synchronization (`MenuBarView.swift` & `SettingsView.swift`)**:
+   - Automatically synchronizes `preferences.baseTiltAngle` when camera tracking is enabled.
+3. **Reference-Accurate Vector Illustration (`MacBookHingeView.swift`)**:
+   - Re-architected drawing to match user's reference design (`media_1789308798832.png`):
+     - **3D Spherical Hinge Joint**: Metallic sphere with specular highlight at top-left and radial shadow at bottom-right.
+     - **Base Angle to Ground**: Base body tilts dynamically by `baseTiltAngle` relative to the ground plane, with a dashed ground baseline indicator and soft contact shadow below.
+     - **Glowing Display Screen**: Electric cyan (`#00B4D8`) inner screen stroke with neon glow, transitioning to amber/orange when fold is active (<90°).
+     - **Dashed Angle Arc**: Dashed arc measuring opening travel between keyboard base and lid.
+     - **Observer Viewpoint & Sightline**: Cyan eye marker dot with dashed sightline aimed at the center of the display screen.
+     - **Interactive Animation**: Plays smoothly during fold preview runs and live physical lid motion.
+
 ---
 
 ## 3. COMPLETE CODEBASE ARCHITECTURE & DIRECTORY STRUCTURE
@@ -252,6 +274,7 @@ Implemented:
 
 ## 5. RECENT COMMITS ON MAIN
 
+- `fe00d7e Security & privacy hardening: entitlements, privacy manifest, sleep/wake camera guard, URL validation`
 - `787e590 Update Cask depends_on macos to :sonoma syntax`
 - `4b9f223 Merge pull request #2 from satyalayatinasish-arch/satyalayatinasish-arch-patch-2 (codacy.yml)`
 - `a38da1e Configure project security policy and update handoff`

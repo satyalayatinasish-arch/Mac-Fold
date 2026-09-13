@@ -25,6 +25,7 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
     @Published private(set) var isFaceVisible = false
     @Published private(set) var estimatedElevationAngle: Double?
     @Published private(set) var estimatedViewingDistance: Double?
+    @Published private(set) var estimatedBaseTiltAngle: Double?
 
     var isRunning: Bool { status == .running }
     var canCalibrate: Bool { lastFaceCenterY != nil && lastFaceHeight != nil }
@@ -177,7 +178,8 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             }
             let faceCenterY = Double(face.boundingBox.midY)
             let eyeCenterY = normalizedEyeCenterY(for: face, in: sampleBuffer) ?? faceCenterY
-            publish(eyeCenterY: eyeCenterY, faceHeight: Double(face.boundingBox.height))
+            let facePitch = face.pitch?.doubleValue
+            publish(eyeCenterY: eyeCenterY, faceHeight: Double(face.boundingBox.height), facePitch: facePitch)
         } catch {
             publishNoFace()
         }
@@ -203,7 +205,7 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
         return Double(points.reduce(0) { $0 + $1.y } / CGFloat(points.count) / size.height)
     }
 
-    private func publish(eyeCenterY: Double, faceHeight: Double) {
+    private func publish(eyeCenterY: Double, faceHeight: Double, facePitch: Double?) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.lastFaceCenterY = eyeCenterY
@@ -219,6 +221,20 @@ final class ViewerPositionTracker: NSObject, ObservableObject, AVCaptureVideoDat
             let cameraWorldElevation = self.hingeAngle + self.baseTiltAngle - 90
             let elevation = min(max(cameraWorldElevation + cameraOffset, 0), 60)
             self.estimatedElevationAngle = elevation
+
+            // Estimate the base tilt relative to gravity from head pitch:
+            // An upright observer facing the display has head pitch ≈ -(cameraWorldElevation - cameraOffset).
+            // Hence: baseTilt ≈ 90 - hingeAngle - pitchDegrees + cameraOffset.
+            if let pitch = facePitch {
+                let pitchDegrees = pitch * 180 / .pi
+                let rawBaseTilt = 90 - self.hingeAngle - pitchDegrees + cameraOffset
+                let clampedBaseTilt = min(max(rawBaseTilt, 0), 35)
+                if let current = self.estimatedBaseTiltAngle {
+                    self.estimatedBaseTiltAngle = current * 0.85 + clampedBaseTilt * 0.15
+                } else {
+                    self.estimatedBaseTiltAngle = clampedBaseTilt
+                }
+            }
 
             // A single RGB camera cannot reliably derive absolute distance
             // without a known physical reference. Keep that estimate opt-in

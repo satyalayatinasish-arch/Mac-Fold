@@ -83,3 +83,5 @@
 "Get Version %@" = "获取版本 %@";
 "Current Version" = "当前版本";
 "Version %@" = "版本 %@";
+"Hide menu bar icon" = "隐藏菜单栏图标";
+"Reopen Mac Fold from Spotlight or Launchpad to view Settings." = "从聚焦（Spotlight）或启动台重新打开 Mac Fold 即可查看设置。";

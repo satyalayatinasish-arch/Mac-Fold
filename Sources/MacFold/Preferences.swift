@@ -25,12 +25,14 @@ final class Preferences: ObservableObject {
         static let baseTiltAngle = "baseTiltAngle"
         static let isCameraViewTracking = "isCameraViewTracking"
         static let isAutomaticUpdateChecks = "isAutomaticUpdateChecks"
+        static let isMenuBarIconHidden = "isMenuBarIconHidden"
 
         static let all = [
             isEnabled, isTimeoutEnabled, thresholdAngle, blurSpan, maxBlurRadius,
             maxDim, viewingDistance, recession, blurEvenness, dimReach,
             showsAngleInMenuBar, isLivePicture, appTheme,
             observerElevationAngle, baseTiltAngle, isCameraViewTracking, isAutomaticUpdateChecks,
+            isMenuBarIconHidden,
         ]
     }
 
@@ -52,6 +54,7 @@ final class Preferences: ObservableObject {
         Key.baseTiltAngle: 0.0,
         Key.isCameraViewTracking: false,
         Key.isAutomaticUpdateChecks: false,
+        Key.isMenuBarIconHidden: false,
     ]
 
     /// Master switch for the depth effect.
@@ -157,6 +160,11 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(isAutomaticUpdateChecks, forKey: Key.isAutomaticUpdateChecks) }
     }
 
+    /// Hides the menu bar status item. The app remains running in the background.
+    @Published var isMenuBarIconHidden: Bool {
+        didSet { defaults.set(isMenuBarIconHidden, forKey: Key.isMenuBarIconHidden) }
+    }
+
     /// Eye distance in screen heights, at the two ends of the perspective
     /// slider. The panel offers the strength, which runs the other way.
     static let farthestEye: Double = 6
@@ -209,6 +217,7 @@ final class Preferences: ObservableObject {
         baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
         isCameraViewTracking = defaults.bool(forKey: Key.isCameraViewTracking)
         isAutomaticUpdateChecks = defaults.bool(forKey: Key.isAutomaticUpdateChecks)
+        isMenuBarIconHidden = defaults.bool(forKey: Key.isMenuBarIconHidden)
     }
 
     func resetToDefaults() {
@@ -232,5 +241,6 @@ final class Preferences: ObservableObject {
         baseTiltAngle = defaults.double(forKey: Key.baseTiltAngle)
         isCameraViewTracking = defaults.bool(forKey: Key.isCameraViewTracking)
         isAutomaticUpdateChecks = defaults.bool(forKey: Key.isAutomaticUpdateChecks)
+        isMenuBarIconHidden = defaults.bool(forKey: Key.isMenuBarIconHidden)
     }
 }

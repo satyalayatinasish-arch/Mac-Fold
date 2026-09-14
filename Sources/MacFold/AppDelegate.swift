@@ -45,6 +45,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         viewerTracker?.stop()
     }
 
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        settingsWindowController?.showSettings()
+        return true
+    }
+
     @objc private func openSettings(_ sender: Any?) {
         settingsWindowController?.showSettings()
     }

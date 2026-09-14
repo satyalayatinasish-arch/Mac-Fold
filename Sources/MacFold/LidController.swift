@@ -637,6 +637,9 @@ final class LidController: ObservableObject {
         workspace.addObserver(forName: NSWorkspace.screensDidWakeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.resume() }
         }
+        workspace.addObserver(forName: NSWorkspace.sessionDidBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.resume() }
+        }
         NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
             object: nil,
@@ -679,21 +682,57 @@ final class LidController: ObservableObject {
         if preferences.isCameraViewTracking {
             viewerTracker.start()
         }
-        // A fresh baseline, so waking with a nearly shut lid does not read as
-        // closing movement.
-        lastChangedAngle = nil
-        angularVelocity = 0
-        lastClosingTime = -.greatestFiniteMagnitude
-        lastMovedDownTime = -.greatestFiniteMagnitude
+
+        // Asynchronously prewarm display capture filters immediately upon wake
+        Task {
+            await self.streamer.warmFilter()
+            await self.snapshotter.warmFilter()
+        }
+
         timeoutReferenceAngle = nil
         timeoutAwaitingRelease = false
         wasTimeoutEnabled = false
         isClosingOut = false
+
         if let angle = sensor.angle() {
             rawAngle = angle
             viewerTracker.updateLidGeometry(hingeAngle: angle, baseTiltAngle: preferences.baseTiltAngle)
             visualAngle.reset(to: angle)
+
+            let threshold = preferences.thresholdAngle
+            let prewarmZone = threshold + preferences.prewarmCeiling
+
+            if angle <= threshold {
+                // If device wakes with lid already folded below threshold, immediately trigger
+                // the fold effect automatically without requiring manual closing velocity.
+                lastMovedDownTime = CACurrentMediaTime()
+                lastClosingTime = CACurrentMediaTime()
+                angularVelocity = -15.0
+                lastChangedAngle = angle
+                setPollInterval(Self.activePollInterval)
+                poll()
+            } else if angle <= prewarmZone + Self.fastPollMargin {
+                // In prewarm zone: switch to fast 60 Hz polling immediately to catch closing motion instantly
+                lastChangedAngle = angle
+                angularVelocity = 0
+                lastClosingTime = -.greatestFiniteMagnitude
+                lastMovedDownTime = -.greatestFiniteMagnitude
+                setPollInterval(Self.activePollInterval)
+                poll()
+            } else {
+                lastChangedAngle = angle
+                angularVelocity = 0
+                lastClosingTime = -.greatestFiniteMagnitude
+                lastMovedDownTime = -.greatestFiniteMagnitude
+                setPollInterval(Self.idlePollInterval)
+                poll()
+            }
+        } else {
+            lastChangedAngle = nil
+            angularVelocity = 0
+            lastClosingTime = -.greatestFiniteMagnitude
+            lastMovedDownTime = -.greatestFiniteMagnitude
+            setPollInterval(Self.idlePollInterval)
         }
-        setPollInterval(Self.idlePollInterval)
     }
 }

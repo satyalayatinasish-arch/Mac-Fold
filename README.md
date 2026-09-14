@@ -16,11 +16,11 @@ Close the lid below 90° to project your live desktop into a perspective fold ef
 
 [**All Releases**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases) &nbsp;•&nbsp; [**Report an Issue**](https://github.com/satyalayatinasish-arch/Mac-Fold/issues)
 
-### 📥 Direct Downloads (Latest Release v1.0.7)
+### 📥 Direct Downloads (Latest Release v1.0.8)
 
 | Operating System | Click to Download | Format | Supported Devices / Requirements |
 |:---|:---|:---:|:---|
-| <img src="assets/logos/apple.png" width="18" height="18" valign="middle" alt="Apple" /> **macOS** | [**Download Mac-Fold-1.0.7.dmg**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-1.0.7.dmg) | `.dmg` installer | macOS 14+ (Sonoma, Sequoia) · Apple Silicon & Intel |
+| <img src="assets/logos/apple.png" width="18" height="18" valign="middle" alt="Apple" /> **macOS** | [**Download Mac-Fold-1.0.8.dmg**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-1.0.8.dmg) | `.dmg` installer | macOS 14+ (Sonoma, Sequoia) · Apple Silicon & Intel |
 | <img src="assets/logos/windows.png" width="18" height="18" valign="middle" alt="Windows" /> **Windows** | [**Download Mac-Fold-Windows.exe**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-Windows.exe) | `.exe` portable | Windows 10 & 11 (64-bit) · Portable standalone |
 | <img src="assets/logos/linux.png" width="18" height="22" valign="middle" alt="Linux" /> **Linux** | [**Download Mac-Fold-Linux.AppImage**](https://github.com/satyalayatinasish-arch/Mac-Fold/releases/latest/download/Mac-Fold-Linux.AppImage) | `.AppImage` | Linux x86_64 (Ubuntu, Fedora, Arch, Debian) |
 

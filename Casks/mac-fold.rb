@@ -1,6 +1,6 @@
 cask "mac-fold" do
-  version "1.0.7"
-  sha256 "2936478e17347d6c9da919372a6de56b0a934a8a57034275df94b78cb92863a7"
+  version "1.0.8"
+  sha256 "3883f99d2934aad7f4a133b9b9f175455d08ebb368b07f1d8f9d25881277a58a"
 
   url "https://github.com/satyalayatinasish-arch/Mac-Fold/releases/download/v#{version}/Mac-Fold-#{version}.dmg"
   name "Mac Fold"

@@ -340,6 +340,11 @@ struct SettingsView: View {
                 .accessibilityLabel(localized("Language"))
             }
             toggleRow(localized("Show angle in menu bar"), isOn: $preferences.showsAngleInMenuBar, help: nil)
+            toggleRow(
+                localized("Hide menu bar icon"),
+                isOn: $preferences.isMenuBarIconHidden,
+                help: localized("Reopen Mac Fold from Spotlight or Launchpad to view Settings.")
+            )
             toggleRow(localized("Launch at login"), isOn: $launchesAtLogin, help: nil)
                 .onChange(of: launchesAtLogin) { _, newValue in
                     setLaunchAtLogin(newValue)

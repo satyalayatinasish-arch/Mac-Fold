@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// The menu bar item and the settings popover.
@@ -13,6 +14,7 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
     private let updateController: UpdateController
     private var titleTimer: Timer?
     private var barWindowMoved: NSObjectProtocol?
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         controller: LidController,
@@ -26,7 +28,19 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         self.viewerTracker = viewerTracker
         self.updateController = updateController
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusItem.isVisible = !preferences.isMenuBarIconHidden
         super.init()
+
+        preferences.$isMenuBarIconHidden
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isHidden in
+                guard let self else { return }
+                self.statusItem.isVisible = !isHidden
+                if isHidden {
+                    self.popover.performClose(nil)
+                }
+            }
+            .store(in: &cancellables)
 
         if let button = statusItem.button {
             button.image = NSImage(

@@ -144,7 +144,7 @@ class PopoverWindow:
         self.app = app
         
         # Title
-        tk.Label(self.window, text="Mac Fold v1.0.7", bg='#2d2d2d', fg='white', font=('Arial', 12, 'bold')).pack(pady=5)
+        tk.Label(self.window, text="Mac Fold v1.0.8", bg='#2d2d2d', fg='white', font=('Arial', 12, 'bold')).pack(pady=5)
         
         # Canvas
         self.canvas = HingeCanvas(self.window)

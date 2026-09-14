@@ -3,8 +3,8 @@
 **Repository root:** `/Users/Yatin/Documents/GitHub/Mac-Fold`  
 **Canonical GitHub repository:** `https://github.com/satyalayatinasish-arch/Mac-Fold`  
 **Current branch:** `main`  
-**Latest release tag:** `v1.0.7`  
-**Current app version:** `1.0.7` (Build `7`)  
+**Latest release tag:** `v1.0.8`  
+**Current app version:** `1.0.8` (Build `8`)  
 **Last updated:** 2026-09-13 (local environment date)  
 
 ---
@@ -201,6 +201,30 @@ Implemented:
 
 ---
 
+### Phase 10: Fast Sleep/Wake Automatic Fold, Hide Menu Bar Icon & v1.0.8 Release
+User requested:
+> *"make the fold effect possible as soon as the device wakes from sleep automatic and fast and also add hide menu bar icon feature(especially for mac os) make new release and release it through github update git and github by commiting changes and updating every file and especially in readme update the links"*
+
+Implemented:
+1. **Instant Sleep/Wake Automatic Fold (`LidController.swift`)**:
+   - Added `NSWorkspace.sessionDidBecomeActiveNotification` to catch wake/unlock events.
+   - Asynchronously prewarms `streamer` and `snapshotter` capture filters immediately upon wake.
+   - If the lid is already $\le 90^\circ$ when waking, the fold effect activates immediately without requiring manual downward closing motion.
+   - Immediately engages 60 Hz (`activePollInterval`) sensor polling in the fold/prewarm zone and invokes `poll()` instantly.
+2. **Hide Menu Bar Icon Option**:
+   - `Preferences.swift`: Added `isMenuBarIconHidden: Bool` (defaults to false).
+   - `StatusItemController.swift`: Dynamically controls `statusItem.isVisible` via Combine sink.
+   - `AppDelegate.swift`: Implemented `applicationShouldHandleReopen(_:hasVisibleWindows:)` so launching Mac Fold from Spotlight, Finder, or Launchpad opens Settings when the menu bar icon is hidden.
+   - `SettingsView.swift`: Added toggle row with descriptive help text under Display & Menu Bar.
+   - Localized in English (`en.lproj`) and Simplified Chinese (`zh-Hans.lproj`).
+3. **Release v1.0.8**:
+   - Packaged and verified `build/release/Mac-Fold-1.0.8.dmg`.
+   - Updated `Casks/mac-fold.rb` with new version and SHA-256 (`3883f99d...`).
+   - Updated `README.md` download links and badges to `v1.0.8`.
+   - Published GitHub Release `v1.0.8` at `https://github.com/satyalayatinasish-arch/Mac-Fold/releases/tag/v1.0.8`.
+
+---
+
 ## 3. COMPLETE CODEBASE ARCHITECTURE & DIRECTORY STRUCTURE
 
 ```text
@@ -314,6 +338,9 @@ Implemented:
 
 ## 5. RECENT COMMITS ON MAIN
 
+- `Release v1.0.8: Fast sleep/wake automatic fold, hide menu bar icon, and download links`
+- `2892f26 Replace emoji platform symbols in README with original company logos`
+- `6525f9f Add Windows and Linux platform ports, CI release workflows, and direct download links`
 - `b3226d8 Calculate base-to-ground angle and align profile animation with reference design`
 
 - `fe00d7e Security & privacy hardening: entitlements, privacy manifest, sleep/wake camera guard, URL validation`
